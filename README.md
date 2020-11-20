@@ -1,17 +1,19 @@
-# Overview 
+# Project Proposal
+
+## Overview 
 Implement a basic RRT Mapping algorithm. RRT (Rapidly Exploring Random Trees) is an algorithm that efficiently maps an unknown space by incrementally building a space filling tree. 
 
-# Goals
+## Goals
 * Implement basic RRT in an open space
 * Bound/obstacle detection
 * Graphics (visual representation at the end of algorithm)
 
-## Other goals to extend the project if I have time
+### Other goals to extend the project if I have time
 * Live Graphics (graphics updating as algorithm runs)
 * RRT* (more advanced version that guarantees shortest path) 
 * Run Dijkstra’s on the graph after it’s been built to find shorter path and compare to RRT’s path
 
-# How my implementation of RRT will work
+## How my implementation of RRT will work
 * First pick starting and ending coordinates
 * Specify coordinates where bounds/obstacles exist 
 * Specify a percentage of the time that the algorithm should try to approach the goal
