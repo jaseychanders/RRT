@@ -24,3 +24,5 @@ Implement a basic RRT Mapping algorithm. RRT (Rapidly Exploring Random Trees) is
   * If the Goal is within an obstacle add the node at the edge of the obstacle
   * If the Goal node was the end node then the mapping part of the algorithm is complete.
   * When mapping finishes trace the path from the end to the start using the parent pointers. Reverse the path.  
+
+![alt text](https://github.com/jaseychanders/RRT/blob/main/IMG_0085.jpg)
