@@ -49,7 +49,7 @@ class RRT {
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
         coordinate *coordinateForNewNode(node * closetNode, coordinate coordinate);
-        node * getNearestNode(coordinate coordinate);
+        node * getNearestNode(coordinate goalCoordinate);
         bool coordinateIsOpen(coordinate coordinate);
         coordinate getNextGoalCoordinate(coordinate * endCoordinate);
         vector<coordinate> getPath(node * endNode);

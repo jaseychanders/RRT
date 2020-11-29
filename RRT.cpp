@@ -22,6 +22,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 
             if(nextNode->coordinate != nullptr){
                 graph.push_back(nextNode);
+                cout << nextNode->coordinate->row << " " << nextNode->coordinate->column << endl;
                 visited[nextNode->coordinate->row][nextNode->coordinate->column] = 1;
             }
         }
@@ -36,7 +37,7 @@ node * RRT::getNextNode(coordinate * endCoordinate) {
     node * nearestNode = getNearestNode(goalCoordinate);
     coordinate * newCoordinate = coordinateForNewNode(nearestNode, goalCoordinate);
     node * newNode = new node (nullptr, nullptr);
-    if(coordinateIsOpen(goalCoordinate)){
+    if(coordinateIsOpen(*newCoordinate)){
         newNode->parent = nearestNode;
         newNode->coordinate = newCoordinate;
     }
@@ -57,19 +58,23 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
         column = rand() % size;
     }
 
-  //  cout << row << " " << column << endl;
+   // cout << " - " << row << " " << column << endl;
 
     return coordinate(row, column);
 }
 
-node *RRT::getNearestNode(coordinate coordinate) {
+node *RRT::getNearestNode(coordinate goalCoordinate) {
     node * nearestNode = nullptr;
+    double nearest = INT_MAX;
     for(node * current : graph){
+        double hypotenuse = sqrt(pow((goalCoordinate.row - current->coordinate->row), 2) + pow((goalCoordinate.column - current->coordinate->column), 2));
         if(nearestNode == nullptr){
             nearestNode = current;
+            nearest = hypotenuse;
         } else {
-            if(*current->coordinate < coordinate){
+            if(hypotenuse < nearest){
                 nearestNode = current;
+                nearest = hypotenuse;
             }
         }
     }
@@ -86,9 +91,8 @@ coordinate *RRT::coordinateForNewNode(node * closetNode, coordinate coordinate) 
     if (hypotenuse <= maxDistance){
         return new struct coordinate(coordinate.row, coordinate.column);
     } else {
-        int row = sin * maxDistance;
-        int column = cos * maxDistance;
-        cout << row << " " << column << endl;
+        double row = round(sin * maxDistance) + closetNode->coordinate->row;
+        double column = round(cos * maxDistance) + closetNode->coordinate->column;
         return new struct coordinate(row, column);
     }
 }
