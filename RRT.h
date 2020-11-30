@@ -43,7 +43,7 @@ class RRT {
     private:
         int maxDistance = 1;
         int size = 10;
-        int obstacles[10][10] = {{0,0,0,0},{0,0,1,1,0}, {0,0,1,1,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0},{0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}};
+        int obstacles[10][10]{};
         int visited[10][10] = {{0,0,0,0},{0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0},{0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}};
         bool endNodeFound = false;
         vector<node*> graph;
@@ -57,6 +57,7 @@ class RRT {
 
     public:
     vector<coordinate> runRRT(int startRow, int startColumn, int endRow, int endColumn);
+    void inputObjects(string csvOfObstacles);
 
 
 };

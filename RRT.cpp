@@ -4,6 +4,10 @@
 
 #include "RRT.h"
 #include <math.h>
+#include <sstream>
+#include <iostream>
+
+using namespace std;
 
 vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int endColumn) {
 
@@ -125,3 +129,33 @@ node *RRT::getNode(coordinate coordinate) {
     }
     return nullptr;
 }
+
+//The string to be passed in is formatted (x1,y1;x2,y2;)
+void RRT::inputObjects(string csvOfObstacles){
+    stringstream obstaclesSS;
+    stringstream coordinateSS;
+    obstaclesSS << csvOfObstacles;
+    string coordinate;
+    string rowRaw;
+    string columnRaw;
+    int row;
+    int column;
+    while(getline(obstaclesSS, coordinate, ';')){
+        coordinateSS.clear();
+        coordinateSS << coordinate;
+        getline(coordinateSS, columnRaw, ',');
+        getline(coordinateSS, rowRaw);
+        row = stoi(rowRaw);
+        column = stoi(columnRaw);
+
+        obstacles[row][column] = 1;
+    }
+
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            cout << obstacles[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
