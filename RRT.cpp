@@ -105,7 +105,9 @@ coordinate *RRT::coordinateForNewNode(node * closetNode, coordinate coordinate) 
 
 
 bool RRT::coordinateIsOpen(coordinate coordinate) {
-    return visited[coordinate.row][coordinate.column] == 0;
+    bool hasBeenVisited = visited[coordinate.row][coordinate.column] == 0;
+    bool isOpen = obstacles[coordinate.row][coordinate.column] != 1;
+    return hasBeenVisited && isOpen;
 }
 
 vector<coordinate> RRT::getPath(node * endNode) {
