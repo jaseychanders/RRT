@@ -8,9 +8,9 @@ using namespace std;
 
 int main(){
     RRT rrt;
-    vector<coordinate> path = rrt.runRRT(0,0,4,4);
+    vector<coordinate> path = rrt.runRRT(0,0,9,9);
     for(coordinate coordinate : path){
-        cout << "{" << coordinate.row << ", " << coordinate.column << "} ";
+        cout << "{" << coordinate.column << ", " << coordinate.row << "} ";
     }
     cout << endl;
 }

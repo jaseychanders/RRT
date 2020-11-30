@@ -11,6 +11,8 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     node * startNode = new node(nullptr, nullptr);
     startNode->coordinate = new coordinate(startRow, startColumn);
     graph.push_back(startNode);
+    visited[0][0] = 1;
+
     coordinate * endCoordinate = new coordinate(endRow, endColumn);
 
     while(!endNodeFound){
@@ -22,7 +24,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 
             if(nextNode->coordinate != nullptr){
                 graph.push_back(nextNode);
-                cout << nextNode->coordinate->row << " " << nextNode->coordinate->column << endl;
+                cout << nextNode->coordinate->column << " " << nextNode->coordinate->row << " parent " << nextNode->parent->coordinate->column << " " << nextNode->parent->coordinate->row << endl;
                 visited[nextNode->coordinate->row][nextNode->coordinate->column] = 1;
             }
         }
@@ -45,7 +47,7 @@ node * RRT::getNextNode(coordinate * endCoordinate) {
 }
 
 coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
-    int goToGoal = rand() & 10;
+    double goToGoal = rand() & 100;
 
     int row;
     int column;
@@ -67,7 +69,7 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
     node * nearestNode = nullptr;
     double nearest = INT_MAX;
     for(node * current : graph){
-        double hypotenuse = sqrt(pow((goalCoordinate.row - current->coordinate->row), 2) + pow((goalCoordinate.column - current->coordinate->column), 2));
+        double hypotenuse = sqrt(pow((goalCoordinate.row - (current->coordinate->row + 0.5)), 2) + pow((goalCoordinate.column - (current->coordinate->column + 0.5)), 2));
         if(nearestNode == nullptr){
             nearestNode = current;
             nearest = hypotenuse;
@@ -84,15 +86,15 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
 
 
 coordinate *RRT::coordinateForNewNode(node * closetNode, coordinate coordinate) {
-    double hypotenuse = sqrt(pow((coordinate.row - closetNode->coordinate->row), 2) + pow((coordinate.column - closetNode->coordinate->column), 2));
-    double sin = (coordinate.row - closetNode->coordinate->row) / hypotenuse;
-    double cos = (coordinate.column - closetNode->coordinate->column) / hypotenuse;
+    double hypotenuse = sqrt(pow((coordinate.row - (closetNode->coordinate->row + 0.5)), 2) + pow((coordinate.column - (closetNode->coordinate->column + 0.5)), 2));
+    double sin = (coordinate.row - (closetNode->coordinate->row + 0.5)) / hypotenuse;
+    double cos = (coordinate.column - (closetNode->coordinate->column + 0.5)) / hypotenuse;
 
     if (hypotenuse <= maxDistance){
         return new struct coordinate(coordinate.row, coordinate.column);
     } else {
-        double row = round(sin * maxDistance) + closetNode->coordinate->row;
-        double column = round(cos * maxDistance) + closetNode->coordinate->column;
+        double row = round(sin * maxDistance) + closetNode->coordinate->row + 0.5;
+        double column = round(cos * maxDistance) + closetNode->coordinate->column + 0.5;
         return new struct coordinate(row, column);
     }
 }
