@@ -41,15 +41,24 @@ struct node{
 
 class RRT {
     private:
-        int maxDistance = 1;
-        int size = 10;
-        int obstacles[10][10]{};
-        int visited[10][10] = {{0,0,0,0},{0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0},{0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}};
+        int maxDistance = 1; //Not variable must be 1
+        int size = 5;
+        int obstacles[5][5]{};
+        int visited[5][5]{};
+        int displayMatrix[11][11] = {{2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,8,2,7,2},
+                                     {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
+                                     {2,1,2,1,2,1,2,1,2,1,2}, {2,3,4,3,4,3,2,0,2,0,2},
+                                     {2,5,2,1,2,1,2,1,2,1,2}, {2,3,2,0,2,0,2,0,2,0,2},
+                                     {2,5,2,1,2,1,2,1,2,1,2}, {2,6,2,0,2,0,2,0,2,0,2},
+                                     {2,1,2,1,2,1,2,1,2,1,2}};
         bool endNodeFound = false;
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
-        coordinate *coordinateForNewNode(node * closetNode, coordinate coordinate);
-        node * getNearestNode(coordinate goalCoordinate);
+        coordinate *coordinateForNewNodeEuclidean(node * closetNode, coordinate coordinate);
+        coordinate *coordinateForNewNodeManhattan(node * closetNode, coordinate coordinate);
+        int getManhattanDist(double column1, double row1, double column2, double row2);
+
+    node * getNearestNode(coordinate goalCoordinate);
         bool coordinateIsOpen(coordinate coordinate);
         coordinate getNextGoalCoordinate(coordinate * endCoordinate);
         vector<coordinate> getPath(node * endNode);
@@ -58,6 +67,7 @@ class RRT {
     public:
     vector<coordinate> runRRT(int startRow, int startColumn, int endRow, int endColumn);
     void inputObjects(string csvOfObstacles);
+    void display();
 
 
 };

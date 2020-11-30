@@ -41,7 +41,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 node * RRT::getNextNode(coordinate * endCoordinate) {
     coordinate goalCoordinate = getNextGoalCoordinate(endCoordinate);
     node * nearestNode = getNearestNode(goalCoordinate);
-    coordinate * newCoordinate = coordinateForNewNode(nearestNode, goalCoordinate);
+    coordinate * newCoordinate = coordinateForNewNodeManhattan(nearestNode, goalCoordinate);
     node * newNode = new node (nullptr, nullptr);
     if(coordinateIsOpen(*newCoordinate)){
         newNode->parent = nearestNode;
@@ -63,8 +63,7 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
         row = rand() % size;
         column = rand() % size;
     }
-
-   // cout << " - " << row << " " << column << endl;
+    //cout << " - " << row << " " << column << endl;
 
     return coordinate(row, column);
 }
@@ -89,7 +88,7 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
 }
 
 
-coordinate *RRT::coordinateForNewNode(node * closetNode, coordinate coordinate) {
+coordinate *RRT::coordinateForNewNodeEuclidean(node * closetNode, coordinate coordinate) {
     double hypotenuse = sqrt(pow((coordinate.row - (closetNode->coordinate->row + 0.5)), 2) + pow((coordinate.column - (closetNode->coordinate->column + 0.5)), 2));
     double sin = (coordinate.row - (closetNode->coordinate->row + 0.5)) / hypotenuse;
     double cos = (coordinate.column - (closetNode->coordinate->column + 0.5)) / hypotenuse;
@@ -102,6 +101,50 @@ coordinate *RRT::coordinateForNewNode(node * closetNode, coordinate coordinate) 
         return new struct coordinate(row, column);
     }
 }
+
+coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coordinate) {
+    double manhattanDistance = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row), coordinate.column,  coordinate.row);
+
+    if (manhattanDistance <= maxDistance){
+        return new struct coordinate(coordinate.row, coordinate.column);
+    } else {
+        struct coordinate * bestCoordinate = new struct coordinate(0,0);
+        int shortestManhattanDist = INT_MAX;
+        //Square above
+        int topSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row + maxDistance), coordinate.column,coordinate.row);
+        int rightSquareDist = getManhattanDist((closetNode->coordinate->column + maxDistance), (closetNode->coordinate->row), coordinate.column, coordinate.row);
+        int bottomSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row-maxDistance), coordinate.column, coordinate.row);
+        int leftSquareDist = getManhattanDist((closetNode->coordinate->column -maxDistance), (closetNode->coordinate->row), coordinate.column, coordinate.row);
+
+        if(topSquareDist < shortestManhattanDist){
+            shortestManhattanDist = topSquareDist;
+            bestCoordinate->column = closetNode->coordinate->column;
+            bestCoordinate->row = closetNode->coordinate->row + maxDistance;
+        } else if (rightSquareDist < shortestManhattanDist){
+        //Square to the right
+            shortestManhattanDist = rightSquareDist;
+            bestCoordinate->column = closetNode->coordinate->column + maxDistance;
+            bestCoordinate->row = closetNode->coordinate->row;
+        } else if (bottomSquareDist < shortestManhattanDist){
+        //Square below
+            shortestManhattanDist = bottomSquareDist;
+            bestCoordinate->column = closetNode->coordinate->column;
+            bestCoordinate->row = closetNode->coordinate->row - maxDistance;
+        } else if ( leftSquareDist < shortestManhattanDist){
+        //Square to the left
+            shortestManhattanDist = leftSquareDist;
+            bestCoordinate->column = closetNode->coordinate->column - maxDistance;
+            bestCoordinate->row = closetNode->coordinate->row;
+        }
+
+        return bestCoordinate;
+    }
+}
+
+int RRT::getManhattanDist(double column1, double row1, double column2, double row2){
+    return (abs(column2 - column1) + abs(row2 - row1));
+}
+
 
 
 bool RRT::coordinateIsOpen(coordinate coordinate) {
@@ -156,6 +199,34 @@ void RRT::inputObjects(string csvOfObstacles){
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
             cout << obstacles[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void RRT::display(){
+    for(int i = 0; i < 11; i ++){
+        for(int j = 0; j < 11; j ++){
+            int num = displayMatrix[i][j];
+            if(num == 0){
+                cout << "   ";
+            } else if(num == 1){
+                cout << "---";
+            } else if(num == 2){
+                cout << "|";
+            } else if(num == 3){
+                cout << " x ";
+            } else if(num == 4){
+                cout << "-";
+            }else if(num == 5){
+                cout << " | ";
+            }else if(num == 6){
+                cout << " S ";
+            }else if(num == 7){
+                cout << " E ";
+            }else if(num == 8){
+                cout << " o ";
+            }
         }
         cout << endl;
     }
