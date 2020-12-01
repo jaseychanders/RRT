@@ -1,7 +1,7 @@
 //
 // Created by Jasey Chanders on 11/27/20.
 //
-
+#pragma
 #ifndef RRT_RRT_H
 #define RRT_RRT_H
 

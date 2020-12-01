@@ -35,7 +35,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
                 graph.push_back(nextNode);
                // cout << nextNode->coordinate->column << " " << nextNode->coordinate->row << " parent " << nextNode->parent->coordinate->column << " " << nextNode->parent->coordinate->row << endl;
                 visited[nextNode->coordinate->row][nextNode->coordinate->column] = 1;
-                if(displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] != 7){
+                if(displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] != 7 && displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] != 6){
                     displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] = 3;
                 }
                 int rowDif = nextNode->coordinate->row - nextNode->parent->coordinate->row;
@@ -137,21 +137,6 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
     }
 
     return nearestNode;
-}
-
-
-coordinate *RRT::coordinateForNewNodeEuclidean(node * closetNode, coordinate coordinate) {
-    double hypotenuse = sqrt(pow((coordinate.row - (closetNode->coordinate->row + 0.5)), 2) + pow((coordinate.column - (closetNode->coordinate->column + 0.5)), 2));
-    double sin = (coordinate.row - (closetNode->coordinate->row + 0.5)) / hypotenuse;
-    double cos = (coordinate.column - (closetNode->coordinate->column + 0.5)) / hypotenuse;
-
-    if (hypotenuse <= maxDistance){
-        return new struct coordinate(coordinate.row, coordinate.column);
-    } else {
-        double row = round(sin * maxDistance) + closetNode->coordinate->row + 0.5;
-        double column = round(cos * maxDistance) + closetNode->coordinate->column + 0.5;
-        return new struct coordinate(row, column);
-    }
 }
 
 coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coordinate) {

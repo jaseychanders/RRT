@@ -3,19 +3,28 @@
 //
 
 #include "RRT.h"
+#include "RandomGenerator.h"
+#include <iostream>
+
+using namespace std;
 
 using namespace std;
 
 int main(){
     RRT rrt;
+    RandomGenerator randomGenerator;
+    randomGenerator.initialize();
+    string obstacles = randomGenerator.getObstacles(10);
+    coordinate startingPosition = randomGenerator.getRandomPosition(10);
+    coordinate endingPosition = randomGenerator.getRandomPosition(10);
+
+    cout << startingPosition.column << ", " << startingPosition.row << "  " << endingPosition.column << ", " << endingPosition.row << endl;
+    cout << obstacles << endl;
 
 
     rrt.resetDisplayMatrix();
-    rrt.inputObjects("2,3;2,4;3,3;3,4;");
+    rrt.inputObjects(obstacles);
 
-    vector<coordinate> path = rrt.runRRT(0,0,7,9);
-//    for(coordinate coordinate : path){
-//     //   cout << "{" << coordinate.column << ", " << coordinate.row << "} ";
-//    }
+    vector<coordinate> path = rrt.runRRT(startingPosition.row,startingPosition.column,endingPosition.row,endingPosition.column);
     cout << endl;
 }
