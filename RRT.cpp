@@ -40,10 +40,14 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
                 }
                 int rowDif = nextNode->coordinate->row - nextNode->parent->coordinate->row;
                 int columnDif = nextNode->coordinate->column - nextNode->parent->coordinate->column;
-                if(rowDif != 0){
+                if(rowDif > 0){
                     displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2][(columnDif + nextNode->parent->coordinate->column)*2+1] = 5;
-                } else if (columnDif != 0) {
+                } else if(rowDif < 0){
+                    displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2+2][(columnDif + nextNode->parent->coordinate->column)*2+1] = 8;
+                }  else if (columnDif > 0) {
                     displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2+1][(columnDif + nextNode->parent->coordinate->column)*2] = 4;
+                } else if (columnDif < 0) {
+                    displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2+1][(columnDif + nextNode->parent->coordinate->column)*2+2] = 10;
                 }
 
             }
@@ -80,7 +84,6 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
         row = rand() % size;
         column = rand() % size;
     }
-   // cout << " - " << row << " " << column << endl;
 
     return coordinate(row, column);
 }
@@ -93,16 +96,35 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
         int rowDif = goalCoordinate.row - current->coordinate->row;
         int columnDif = goalCoordinate.column - current->coordinate->column;
         bool notBlocked = true;
-        for(int i = 1; i <= columnDif; i++){
-            if (obstacles[current->coordinate->row][current->coordinate->column+ i] != 0){
-                notBlocked = false;
+        if(columnDif >=0){
+            for(int i = 1; i <= columnDif; i++){
+                if (obstacles[current->coordinate->row][current->coordinate->column+ i] != 0){
+                    notBlocked = false;
+                }
+            }
+        } else {
+            for(int i = -1; i >= columnDif; i--){
+                if (obstacles[current->coordinate->row][current->coordinate->column+ i] != 0){
+                    notBlocked = false;
+                }
             }
         }
-        for(int i = 1; i <= rowDif; i++){
-           if (obstacles[current->coordinate->row +i][goalCoordinate.column] != 0){
-               notBlocked = false;
-           }
+
+        if(rowDif >=0){
+            for(int i = 1; i <= rowDif; i++){
+                if (obstacles[current->coordinate->row +i][goalCoordinate.column] != 0){
+                    notBlocked = false;
+                }
+            }
+        } else {
+            for(int i = -1; i >= rowDif; i--){
+                if (obstacles[current->coordinate->row +i][goalCoordinate.column] != 0){
+                    notBlocked = false;
+                }
+            }
         }
+
+
         if(nearestNode == nullptr){
             nearestNode = current;
             nearest = manhattanDistToGoal;
@@ -199,10 +221,14 @@ vector<coordinate> RRT::printPath(node * endNode) {
             rowDif = tmp->coordinate->row - tmp->parent->coordinate->row;
             columnDif = tmp->coordinate->column - tmp->parent->coordinate->column;
         }
-        if(rowDif != 0){
+        if(rowDif > 0){
             displayMatrix[(rowDif + tmp->parent->coordinate->row)*2][(columnDif + tmp->parent->coordinate->column)*2+1] = 5;
-        } else if (columnDif != 0) {
+        } else if(rowDif < 0){
+            displayMatrix[(rowDif + tmp->parent->coordinate->row)*2+2][(columnDif + tmp->parent->coordinate->column)*2+1] = 8;
+        }  else if (columnDif > 0) {
             displayMatrix[(rowDif + tmp->parent->coordinate->row)*2+1][(columnDif + tmp->parent->coordinate->column)*2] = 4;
+        } else if (columnDif < 0) {
+            displayMatrix[(rowDif + tmp->parent->coordinate->row)*2+1][(columnDif + tmp->parent->coordinate->column)*2+2] = 10;
         }
         tmp = tmp->parent;
     }
@@ -242,17 +268,11 @@ void RRT::inputObjects(string csvOfObstacles){
         displayMatrix[row*2+1][column*2 +1] = 9;
     }
 
-//    for(int i = 0; i < size; i++){
-//        for(int j = 0; j < size; j++){
-//            cout << obstacles[i][j] << " ";
-//        }
-//        cout << endl;
-//    }
 }
 
 void RRT::display(){
-    for(int i = 10; i >= 0; i --){
-        for(int j = 0; j < 11; j ++){
+    for(int i = size*2; i >= 0; i --){
+        for(int j = 0; j < (size*2)+1; j ++){
             int num = displayMatrix[i][j];
             if(num == 0){
                 cout << "   ";
@@ -265,15 +285,17 @@ void RRT::display(){
             } else if(num == 4){
                 cout << "→";
             }else if(num == 5){
-                cout << " ↑ "; //•
+                cout << " ↑ ";
             }else if(num == 6){
                 cout << " S ";
             }else if(num == 7){
                 cout << " E ";
             }else if(num == 8){
-                cout << " o ";
+                cout << " ↓ ";
             }else if(num == 9){
                 cout << " # ";
+            }else if(num == 10){
+                cout << "←";
             }
         }
         cout << endl;
@@ -282,16 +304,16 @@ void RRT::display(){
 }
 
 void RRT::resetDisplayMatrix(){
-    for(int i = 0; i < 11; i ++){
-        for(int j = 0; j < 11; j ++){
+    for(int i = 0; i < size*2+1; i ++){
+        for(int j = 0; j < size*2+1; j ++){
            displayMatrix[i][j] = emptyDisplayMatrix[i][j];
         }
     }
 }
 
 void RRT::resetDisplayMatrixPathOnly(){
-    for(int i = 0; i < 11; i ++){
-        for(int j = 0; j < 11; j ++){
+    for(int i = 0; i < size*2+1; i ++){
+        for(int j = 0; j < size*2+1; j ++){
             if(displayMatrix[i][j] != 9 && displayMatrix[i][j] != 6 && displayMatrix[i][j] != 7){
                 displayMatrix[i][j] = emptyDisplayMatrix[i][j];
             }
