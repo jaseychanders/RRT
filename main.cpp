@@ -9,9 +9,9 @@ using namespace std;
 int main(){
     RRT rrt;
 
-    rrt.display();
 
-    rrt.inputObjects("2,4;2,5;3,4;3,5;");
+
+    rrt.inputObjects("2,3;2,4;3,3;3,4;");
 
     vector<coordinate> path = rrt.runRRT(0,0,4,4);
     for(coordinate coordinate : path){
@@ -19,4 +19,5 @@ int main(){
     }
     cout << endl;
 
+    rrt.display();
 }

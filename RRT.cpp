@@ -14,6 +14,11 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     srand(time(nullptr));
     node * startNode = new node(nullptr, nullptr);
     startNode->coordinate = new coordinate(startRow, startColumn);
+    displayMatrix[startRow*2+1][startColumn*2+1] = 6;
+    displayMatrix[endRow*2+1][endColumn*2+1] = 7;
+
+    display();
+
     graph.push_back(startNode);
     visited[0][0] = 1;
 
@@ -28,10 +33,20 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 
             if(nextNode->coordinate != nullptr){
                 graph.push_back(nextNode);
-                cout << nextNode->coordinate->column << " " << nextNode->coordinate->row << " parent " << nextNode->parent->coordinate->column << " " << nextNode->parent->coordinate->row << endl;
+               // cout << nextNode->coordinate->column << " " << nextNode->coordinate->row << " parent " << nextNode->parent->coordinate->column << " " << nextNode->parent->coordinate->row << endl;
                 visited[nextNode->coordinate->row][nextNode->coordinate->column] = 1;
+                displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] = 3;
+                int rowDif = nextNode->coordinate->row - nextNode->parent->coordinate->row;
+                int columnDif = nextNode->coordinate->column - nextNode->parent->coordinate->column;
+                if(rowDif != 0){
+                    displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2][(columnDif + nextNode->parent->coordinate->column)*2+1] = 5;
+                } else if (columnDif != 0) {
+                    displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2+1][(columnDif + nextNode->parent->coordinate->column)*2] = 4;
+                }
+
             }
         }
+        display();
 
     }
 
@@ -63,7 +78,7 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
         row = rand() % size;
         column = rand() % size;
     }
-    //cout << " - " << row << " " << column << endl;
+    cout << " - " << row << " " << column << endl;
 
     return coordinate(row, column);
 }
@@ -194,6 +209,7 @@ void RRT::inputObjects(string csvOfObstacles){
         column = stoi(columnRaw);
 
         obstacles[row][column] = 1;
+        displayMatrix[row*2+1][column*2 +1] = 9;
     }
 
     for(int i = 0; i < size; i++){
@@ -205,7 +221,7 @@ void RRT::inputObjects(string csvOfObstacles){
 }
 
 void RRT::display(){
-    for(int i = 0; i < 11; i ++){
+    for(int i = 10; i >= 0; i --){
         for(int j = 0; j < 11; j ++){
             int num = displayMatrix[i][j];
             if(num == 0){
@@ -217,18 +233,21 @@ void RRT::display(){
             } else if(num == 3){
                 cout << " x ";
             } else if(num == 4){
-                cout << "-";
+                cout << "→";
             }else if(num == 5){
-                cout << " | ";
+                cout << " ↑ "; //•
             }else if(num == 6){
                 cout << " S ";
             }else if(num == 7){
                 cout << " E ";
             }else if(num == 8){
                 cout << " o ";
+            }else if(num == 9){
+                cout << " # ";
             }
         }
         cout << endl;
     }
+    cout << endl;
 }
 
