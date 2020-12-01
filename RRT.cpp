@@ -305,3 +305,7 @@ void RRT::resetDisplayMatrixPathOnly(){
         }
     }
 }
+
+int * RRT::getObstacles() {
+    return *obstacles;
+}

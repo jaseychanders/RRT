@@ -11,7 +11,7 @@
 class RandomGenerator {
 public:
     void initialize();
-    coordinate getRandomPosition(int size);
+    coordinate getRandomPosition(int size, int * obstacles);
     string getObstacles(int size);
 };
 

@@ -41,7 +41,7 @@ struct node{
 
 class RRT {
     private:
-        int maxDistance = 1; //Not variable must be 1
+        int maxDistance = 1;
         int size = 10;
         int obstacles[10][10]{};
         int visited[10][10]{};
@@ -60,7 +60,6 @@ class RRT {
         bool endNodeFound = false;
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
-        coordinate *coordinateForNewNodeEuclidean(node * closetNode, coordinate coordinate);
         coordinate *coordinateForNewNodeManhattan(node * closetNode, coordinate coordinate);
         int getManhattanDist(double column1, double row1, double column2, double row2);
         node * getNearestNode(coordinate goalCoordinate);
@@ -77,6 +76,7 @@ public:
     void inputObjects(string csvOfObstacles);
     void display();
     void resetDisplayMatrix();
+    int * getObstacles();
 
 
 };

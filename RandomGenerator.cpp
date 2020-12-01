@@ -11,11 +11,17 @@ void RandomGenerator::initialize() {
     srand(time(NULL));
 }
 
-coordinate RandomGenerator::getRandomPosition(int size) {
+coordinate RandomGenerator::getRandomPosition(int size, int * obstacles) {
     int x = rand() % size;
     int y = rand() % size;
 
-    return coordinate(y, x);
+  //  if(obstacles[y][x] != 1){
+        return coordinate(y, x);
+//    } else {
+//       coordinate coord = getRandomPosition(size, obstacles);
+//        return coord;
+//    }
+
 }
 
 string RandomGenerator::getObstacles(int size) {
