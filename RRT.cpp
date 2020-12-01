@@ -35,7 +35,9 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
                 graph.push_back(nextNode);
                // cout << nextNode->coordinate->column << " " << nextNode->coordinate->row << " parent " << nextNode->parent->coordinate->column << " " << nextNode->parent->coordinate->row << endl;
                 visited[nextNode->coordinate->row][nextNode->coordinate->column] = 1;
-                displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] = 3;
+                if(displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] != 7){
+                    displayMatrix[nextNode->coordinate->row*2+1][nextNode->coordinate->column*2+1] = 3;
+                }
                 int rowDif = nextNode->coordinate->row - nextNode->parent->coordinate->row;
                 int columnDif = nextNode->coordinate->column - nextNode->parent->coordinate->column;
                 if(rowDif != 0){
@@ -50,7 +52,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 
     }
 
-    return getPath(getNode(*endCoordinate));
+    return printPath(getNode(*endCoordinate));
 }
 
 node * RRT::getNextNode(coordinate * endCoordinate) {
@@ -78,7 +80,7 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
         row = rand() % size;
         column = rand() % size;
     }
-    cout << " - " << row << " " << column << endl;
+   // cout << " - " << row << " " << column << endl;
 
     return coordinate(row, column);
 }
@@ -87,14 +89,27 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
     node * nearestNode = nullptr;
     double nearest = INT_MAX;
     for(node * current : graph){
-        double hypotenuse = sqrt(pow((goalCoordinate.row - (current->coordinate->row + 0.5)), 2) + pow((goalCoordinate.column - (current->coordinate->column + 0.5)), 2));
+        int manhattanDistToGoal = getManhattanDist(current->coordinate->column, current->coordinate->row, goalCoordinate.column, goalCoordinate.row);
+        int rowDif = goalCoordinate.row - current->coordinate->row;
+        int columnDif = goalCoordinate.column - current->coordinate->column;
+        bool notBlocked = true;
+        for(int i = 1; i <= columnDif; i++){
+            if (obstacles[current->coordinate->row][current->coordinate->column+ i] != 0){
+                notBlocked = false;
+            }
+        }
+        for(int i = 1; i <= rowDif; i++){
+           if (obstacles[current->coordinate->row +i][goalCoordinate.column] != 0){
+               notBlocked = false;
+           }
+        }
         if(nearestNode == nullptr){
             nearestNode = current;
-            nearest = hypotenuse;
+            nearest = manhattanDistToGoal;
         } else {
-            if(hypotenuse < nearest){
+            if(notBlocked && manhattanDistToGoal < nearest){
                 nearestNode = current;
-                nearest = hypotenuse;
+                nearest = manhattanDistToGoal;
             }
         }
     }
@@ -168,16 +183,31 @@ bool RRT::coordinateIsOpen(coordinate coordinate) {
     return hasBeenVisited && isOpen;
 }
 
-vector<coordinate> RRT::getPath(node * endNode) {
-
+vector<coordinate> RRT::printPath(node * endNode) {
+    resetDisplayMatrixPathOnly();
     vector<coordinate> path;
     node * tmp = endNode;
     while(tmp != nullptr){
         path.push_back(*tmp->coordinate);
+
+        if(displayMatrix[tmp->coordinate->row*2+1][tmp->coordinate->column*2+1] != 7 && displayMatrix[tmp->coordinate->row*2+1][tmp->coordinate->column*2+1] != 6){
+            displayMatrix[tmp->coordinate->row*2+1][tmp->coordinate->column*2+1] = 3;
+        }
+        int rowDif = 0;
+        int columnDif = 0;
+        if(tmp->parent != nullptr){
+            rowDif = tmp->coordinate->row - tmp->parent->coordinate->row;
+            columnDif = tmp->coordinate->column - tmp->parent->coordinate->column;
+        }
+        if(rowDif != 0){
+            displayMatrix[(rowDif + tmp->parent->coordinate->row)*2][(columnDif + tmp->parent->coordinate->column)*2+1] = 5;
+        } else if (columnDif != 0) {
+            displayMatrix[(rowDif + tmp->parent->coordinate->row)*2+1][(columnDif + tmp->parent->coordinate->column)*2] = 4;
+        }
         tmp = tmp->parent;
     }
     reverse(path.begin(), path.end());
-
+    display();
     return path;
 }
 
@@ -212,12 +242,12 @@ void RRT::inputObjects(string csvOfObstacles){
         displayMatrix[row*2+1][column*2 +1] = 9;
     }
 
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            cout << obstacles[i][j] << " ";
-        }
-        cout << endl;
-    }
+//    for(int i = 0; i < size; i++){
+//        for(int j = 0; j < size; j++){
+//            cout << obstacles[i][j] << " ";
+//        }
+//        cout << endl;
+//    }
 }
 
 void RRT::display(){
@@ -251,3 +281,20 @@ void RRT::display(){
     cout << endl;
 }
 
+void RRT::resetDisplayMatrix(){
+    for(int i = 0; i < 11; i ++){
+        for(int j = 0; j < 11; j ++){
+           displayMatrix[i][j] = emptyDisplayMatrix[i][j];
+        }
+    }
+}
+
+void RRT::resetDisplayMatrixPathOnly(){
+    for(int i = 0; i < 11; i ++){
+        for(int j = 0; j < 11; j ++){
+            if(displayMatrix[i][j] != 9 && displayMatrix[i][j] != 6 && displayMatrix[i][j] != 7){
+                displayMatrix[i][j] = emptyDisplayMatrix[i][j];
+            }
+        }
+    }
+}

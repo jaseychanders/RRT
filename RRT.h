@@ -45,29 +45,33 @@ class RRT {
         int size = 5;
         int obstacles[5][5]{};
         int visited[5][5]{};
-        int displayMatrix[11][11] = {{2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
-                                     {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
-                                     {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
-                                     {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
-                                     {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
-                                     {2,1,2,1,2,1,2,1,2,1,2}};
+        int emptyDisplayMatrix[11][11] = {{2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
+                                         {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
+                                         {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
+                                         {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
+                                         {2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2},
+                                         {2,1,2,1,2,1,2,1,2,1,2}};
+        int displayMatrix[11][11]{};
         bool endNodeFound = false;
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
         coordinate *coordinateForNewNodeEuclidean(node * closetNode, coordinate coordinate);
         coordinate *coordinateForNewNodeManhattan(node * closetNode, coordinate coordinate);
         int getManhattanDist(double column1, double row1, double column2, double row2);
-
-    node * getNearestNode(coordinate goalCoordinate);
+        node * getNearestNode(coordinate goalCoordinate);
         bool coordinateIsOpen(coordinate coordinate);
         coordinate getNextGoalCoordinate(coordinate * endCoordinate);
-        vector<coordinate> getPath(node * endNode);
+        vector<coordinate> printPath(node * endNode);
         node * getNode(coordinate coordinate);
+        void resetDisplayMatrixPathOnly();
 
-    public:
+
+
+public:
     vector<coordinate> runRRT(int startRow, int startColumn, int endRow, int endColumn);
     void inputObjects(string csvOfObstacles);
     void display();
+    void resetDisplayMatrix();
 
 
 };
