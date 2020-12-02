@@ -16,7 +16,7 @@ int main(){
   //  randomGenerator.initialize();
    // string obstacles = randomGenerator.getObstacles(10);
     rrt.resetDisplayMatrix();
-    rrt.inputObjects("1,8;1,9;2,8;2,9;1,6;1,7;1,8;1,9;2,6;2,7;2,8;2,9;3,6;");
+    rrt.inputObjects("0,2;1,2;2,2;3,2;4,2;5,2;6,2;7,2;8,2;9,2;");
    // int * obstaclesArray = rrt.getObstacles();
    // coordinate startingPosition = randomGenerator.getRandomPosition(10, obstaclesArray);
     //coordinate endingPosition = randomGenerator.getRandomPosition(10, obstaclesArray);

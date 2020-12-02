@@ -26,6 +26,10 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 
     while(!endNodeFound){
         node * nextNode = getNextNode(endCoordinate);
+        if(goalUnreachable){
+            cout << "Goal Unreachable" << endl;
+            break;
+        }
         if(nextNode->coordinate != nullptr){
             if(nextNode->coordinate->row == endCoordinate->row && nextNode->coordinate->column == endCoordinate->column){
                 endNodeFound = true;
@@ -62,6 +66,12 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 node * RRT::getNextNode(coordinate * endCoordinate) {
     coordinate goalCoordinate = getNextGoalCoordinate(endCoordinate);
     node * nearestNode = getNearestNode(goalCoordinate);
+
+    if(nearestNode == nullptr){
+        goalUnreachable = true;
+        return nullptr;
+    }
+
     coordinate * newCoordinate = coordinateForNewNodeManhattan(nearestNode, goalCoordinate);
     node * newNode = new node (nullptr, nullptr);
     if(coordinateIsOpen(*newCoordinate)){
@@ -125,7 +135,7 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
         }
 
 
-        if(nearestNode == nullptr){
+        if(notBlocked && nearestNode == nullptr){
             nearestNode = current;
             nearest = manhattanDistToGoal;
         } else {
@@ -153,26 +163,54 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coor
         int bottomSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row-maxDistance), coordinate.column, coordinate.row);
         int leftSquareDist = getManhattanDist((closetNode->coordinate->column -maxDistance), (closetNode->coordinate->row), coordinate.column, coordinate.row);
 
-        if(topSquareDist < shortestManhattanDist){
-            shortestManhattanDist = topSquareDist;
-            bestCoordinate->column = closetNode->coordinate->column;
-            bestCoordinate->row = closetNode->coordinate->row + maxDistance;
-        } else if (rightSquareDist < shortestManhattanDist){
-        //Square to the right
-            shortestManhattanDist = rightSquareDist;
-            bestCoordinate->column = closetNode->coordinate->column + maxDistance;
-            bestCoordinate->row = closetNode->coordinate->row;
-        } else if (bottomSquareDist < shortestManhattanDist){
-        //Square below
-            shortestManhattanDist = bottomSquareDist;
-            bestCoordinate->column = closetNode->coordinate->column;
-            bestCoordinate->row = closetNode->coordinate->row - maxDistance;
-        } else if ( leftSquareDist < shortestManhattanDist){
-        //Square to the left
-            shortestManhattanDist = leftSquareDist;
-            bestCoordinate->column = closetNode->coordinate->column - maxDistance;
-            bestCoordinate->row = closetNode->coordinate->row;
+        int whichFirst = rand() % 4;
+        bool allHaveBeenChecked = false;
+        bool hasLoopedOnce = false;
+        bool topChecked = false;
+        bool rightChecked = false;
+        bool bottomChecked = false;
+        bool leftChecked = false;
+
+        while(!allHaveBeenChecked){
+            if(!topChecked && (whichFirst == 0 || hasLoopedOnce)){
+                topChecked = true;
+                if(topSquareDist < shortestManhattanDist){
+                    //Square above
+                    shortestManhattanDist = topSquareDist;
+                    bestCoordinate->column = closetNode->coordinate->column;
+                    bestCoordinate->row = closetNode->coordinate->row + maxDistance;
+                }
+            } else if (!rightChecked && (whichFirst == 1 || hasLoopedOnce)){
+                rightChecked = true;
+                if(rightSquareDist < shortestManhattanDist){
+                    //Square to the right
+                    shortestManhattanDist = rightSquareDist;
+                    bestCoordinate->column = closetNode->coordinate->column + maxDistance;
+                    bestCoordinate->row = closetNode->coordinate->row;
+                }
+            } else if (!bottomChecked && (whichFirst == 2 || hasLoopedOnce)){
+                bottomChecked = true;
+                if(bottomSquareDist < shortestManhattanDist){
+                    //Square below
+                    shortestManhattanDist = bottomSquareDist;
+                    bestCoordinate->column = closetNode->coordinate->column;
+                    bestCoordinate->row = closetNode->coordinate->row - maxDistance;
+                }
+            } else if (!leftChecked && (whichFirst == 3 || hasLoopedOnce)){
+                leftChecked = true;
+                if(leftSquareDist < shortestManhattanDist){
+                    //Square to the left
+                    shortestManhattanDist = leftSquareDist;
+                    bestCoordinate->column = closetNode->coordinate->column - maxDistance;
+                    bestCoordinate->row = closetNode->coordinate->row;
+                }
+            }
+            hasLoopedOnce = true;
+            if(topChecked && rightChecked && bottomChecked && leftChecked){
+                allHaveBeenChecked = true;
+            }
         }
+
 
         return bestCoordinate;
     }

@@ -58,6 +58,7 @@ class RRT {
                                           {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}};
         int displayMatrix[21][21]{};
         bool endNodeFound = false;
+        bool goalUnreachable = false;
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
         coordinate *coordinateForNewNodeManhattan(node * closetNode, coordinate coordinate);
