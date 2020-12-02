@@ -10,16 +10,19 @@ using namespace std;
 
 using namespace std;
 
+//TODO fix starting and ending points being in obstacles
+
 int main(){
     RRT rrt;
     RandomGenerator randomGenerator;
     randomGenerator.initialize();
-    string obstacles = randomGenerator.getObstacles(10);
+    string obstacles = randomGenerator.getObstacles(5);
+    cout << obstacles << endl;
     rrt.resetDisplayMatrix();
     rrt.inputObstacles(obstacles);
    // int * obstaclesArray = rrt.getObstacles();
-    coordinate startingPosition = randomGenerator.getRandomPosition(10);
-    coordinate endingPosition = randomGenerator.getRandomPosition(10);
+    coordinate startingPosition = randomGenerator.getRandomPosition(5);
+    coordinate endingPosition = randomGenerator.getRandomPosition(5);
 
  //   cout << startingPosition.column << ", " << startingPosition.row << "  " << endingPosition.column << ", " << endingPosition.row << endl;
    // cout << obstacles << endl;

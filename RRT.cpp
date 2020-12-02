@@ -31,7 +31,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     int numIterations = 0;
 
     //Loop until end node is found or you have gone though enough iterations that their isn't a path to the end
-    while(!endNodeFound && numIterations < size * size * 3){
+    while(!endNodeFound && numIterations < size * size * size){
         node * nextNode = getNextNode(endCoordinate);
 
         //Set the flag if this node is the end
@@ -65,7 +65,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
         numIterations ++;
     }
 
-    if(numIterations >= size * size * 3){
+    if(numIterations >= size * size * size){
         cout << "Too many iterations, goal is likely unreachable" << endl;
     }
 
@@ -123,41 +123,6 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
             blocked = false;
         }
 
-
-//        //Calc the distance by row and column
-//        int rowDif = goalCoordinate.row - current->coordinate->row;
-//        int columnDif = goalCoordinate.column - current->coordinate->column;
-//        bool notBlocked = true;
-
-//        //Check that the straight path between this node and the goal is not blocked
-//        if(columnDif >0){
-//            for(int i = 1; i <= columnDif; i++){
-//                if (obstacles[current->coordinate->row][current->coordinate->column+ i] != 0){
-//                    notBlocked = false;
-//                }
-//            }
-//        } else if (columnDif <0) {
-//            for(int i = -1; i >= columnDif; i--){
-//                if (obstacles[current->coordinate->row][current->coordinate->column+ i] != 0){
-//                    notBlocked = false;
-//                }
-//            }
-//        }
-//
-//        if(rowDif >0){
-//            for(int i = 1; i <= rowDif; i++){
-//                if (obstacles[current->coordinate->row +i][goalCoordinate.column] != 0){
-//                    notBlocked = false;
-//                }
-//            }
-//        } else if(rowDif <0){
-//            for(int i = -1; i >= rowDif; i--){
-//                if (obstacles[current->coordinate->row +i][goalCoordinate.column] != 0){
-//                    notBlocked = false;
-//                }
-//            }
-//        }
-
         //If our current node is closer than the previous ones replace the shortest with this node
         if(!blocked && nearestNode == nullptr){
             nearestNode = current;
@@ -210,7 +175,6 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coor
         bool bottomChecked = false;
         bool leftChecked = false;
 
-        //TODO check if square is open here
         while(!allHaveBeenChecked){ // Loop though all four squares and find the one that is closest
             if(!topChecked && (whichFirst == 0 || hasLoopedOnce)){
                 topChecked = true;
@@ -264,9 +228,14 @@ int RRT::getManhattanDist(double column1, double row1, double column2, double ro
 
 // Checks if a coordinate hasn't been visited and doesn't have an obstacle
 bool RRT::coordinateIsOpen(int column, int row) {
-    bool hasBeenVisited = visited[row][column] == 0;
-    bool isOpen = obstacles[row][column] != 1;
-    return hasBeenVisited && isOpen;
+    if(column < size && column > -1 && row < size && row > -1){
+        bool hasBeenVisited = visited[row][column] == 0;
+        bool isOpen = obstacles[row][column] != 1;
+        return hasBeenVisited && isOpen;
+    } else {
+        return false;
+    }
+
 }
 
 // Clears the display matrix and then puts only the path that has been found in the matrix and prints it
