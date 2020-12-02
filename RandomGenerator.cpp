@@ -11,7 +11,7 @@ void RandomGenerator::initialize() {
     srand(time(NULL));
 }
 
-coordinate RandomGenerator::getRandomPosition(int size, int * obstacles) {
+coordinate RandomGenerator::getRandomPosition(int size) {
     int x = rand() % size;
     int y = rand() % size;
 

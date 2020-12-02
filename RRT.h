@@ -64,7 +64,7 @@ class RRT {
         coordinate *coordinateForNewNodeManhattan(node * closetNode, coordinate coordinate);
         int getManhattanDist(double column1, double row1, double column2, double row2);
         node * getNearestNode(coordinate goalCoordinate);
-        bool coordinateIsOpen(coordinate coordinate);
+        bool coordinateIsOpen(int column, int row);
         coordinate getNextGoalCoordinate(coordinate * endCoordinate);
         vector<coordinate> printPath(node * endNode);
         node * getNode(coordinate coordinate);
@@ -74,7 +74,7 @@ class RRT {
 
 public:
     vector<coordinate> runRRT(int startRow, int startColumn, int endRow, int endColumn);
-    void inputObjects(string csvOfObstacles);
+    void inputObstacles(string csvOfObstacles);
     void display();
     void resetDisplayMatrix();
     int * getObstacles();
