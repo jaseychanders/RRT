@@ -31,7 +31,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     int numIterations = 0;
 
     //Loop until end node is found or you have gone though enough iterations that their isn't a path to the end
-    while(!endNodeFound && numIterations < size * size * size){
+    while(!endNodeFound && numIterations < size * size * 2){
         node * nextNode = getNextNode(endCoordinate);
 
         //Set the flag if this node is the end
@@ -65,7 +65,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
         numIterations ++;
     }
 
-    if(numIterations >= size * size * size){
+    if(numIterations >= size * size * 2){
         cout << "Too many iterations, goal is likely unreachable" << endl;
     }
 
@@ -80,7 +80,7 @@ node * RRT::getNextNode(coordinate * endCoordinate) {
 
     if(nearestNode != nullptr){
         coordinate * newCoordinate = coordinateForNewNodeManhattan(nearestNode, goalCoordinate);
-        if(coordinateIsOpen(newCoordinate->column, newCoordinate->row)){
+        if(newCoordinate->row != -1 && coordinateIsOpen(newCoordinate->column, newCoordinate->row)){
             newNode->parent = nearestNode;
             newNode->coordinate = newCoordinate;
         }
@@ -145,7 +145,7 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coor
     if (manhattanDistance <= maxDistance){ // Goal coordinate is only one unit away
         return new struct coordinate(coordinate.row, coordinate.column);
     } else {
-        struct coordinate * bestCoordinate = new struct coordinate(0,0);
+        struct coordinate * bestCoordinate = new struct coordinate(-1,-1);
         int shortestManhattanDist = INT_MAX;
         //Gets the distances from the four squares on each side of the nearest node
         int topSquareDist = -1;

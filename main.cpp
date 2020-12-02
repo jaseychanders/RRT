@@ -19,7 +19,7 @@ int main(){
     string obstacles = randomGenerator.getObstacles(5);
     cout << obstacles << endl;
     rrt.resetDisplayMatrix();
-    rrt.inputObstacles(obstacles);
+    rrt.inputObstacles("0,2;1,2;2,2;3,2;4,2;");
    // int * obstaclesArray = rrt.getObstacles();
     coordinate startingPosition = randomGenerator.getRandomPosition(5);
     coordinate endingPosition = randomGenerator.getRandomPosition(5);
@@ -29,7 +29,7 @@ int main(){
 
 
 
-  // vector<coordinate> path = rrt.runRRT(9,9,9,0);
-    vector<coordinate> path = rrt.runRRT(startingPosition.row,startingPosition.column,endingPosition.row,endingPosition.column);
+   vector<coordinate> path = rrt.runRRT(4,4,0,0);
+   // vector<coordinate> path = rrt.runRRT(startingPosition.row,startingPosition.column,endingPosition.row,endingPosition.column);
     cout << endl;
 }
