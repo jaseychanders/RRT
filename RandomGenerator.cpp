@@ -15,17 +15,17 @@ coordinate RandomGenerator::getRandomPosition(int size) {
     int x = rand() % size;
     int y = rand() % size;
 
-  //  if(obstacles[y][x] != 1){
+    if(obstacles[y][x] != 1){
         return coordinate(y, x);
-//    } else {
-//       coordinate coord = getRandomPosition(size, obstacles);
-//        return coord;
-//    }
+    } else {
+       coordinate coord = getRandomPosition(size);
+        return coord;
+    }
 
 }
 
 string RandomGenerator::getObstacles(int size) {
-    int numOfObjects = rand() % size;
+    int numOfObjects = rand() % size /2;
     cout << numOfObjects << endl;
     string objectsString;
     for(int i = 0; i < numOfObjects; i++){
@@ -37,6 +37,7 @@ string RandomGenerator::getObstacles(int size) {
             objectsString.append(",");
             objectsString.append(to_string(y));
             objectsString.append(";");
+            obstacles[y][x] = 1;
         } else {
             for(int j = -radiusOfObject; j < radiusOfObject; j++){
                 int xLoc = x+j;
@@ -49,6 +50,7 @@ string RandomGenerator::getObstacles(int size) {
                         objectsString.append(",");
                         objectsString.append(to_string(yChar));
                         objectsString.append(";");
+                        obstacles[y][x] = 1;
                     }
                 }
         }

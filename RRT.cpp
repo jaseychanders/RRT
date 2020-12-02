@@ -31,7 +31,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     int numIterations = 0;
 
     //Loop until end node is found or you have gone though enough iterations that their isn't a path to the end
-    while(!endNodeFound && numIterations < size * size * 2){
+    while(!endNodeFound && numIterations < size * size * 3){
         node * nextNode = getNextNode(endCoordinate);
 
         //Set the flag if this node is the end
@@ -65,7 +65,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
         numIterations ++;
     }
 
-    if(numIterations >= size * size * 2){
+    if(numIterations >= size * size * 3){
         cout << "Too many iterations, goal is likely unreachable" << endl;
     }
 
@@ -96,7 +96,7 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
     int row;
     int column;
 
-    if(goToGoal <= 2){
+    if(goToGoal <= 5){
         row = endCoordinate->row;
         column = endCoordinate->column;
     } else {
@@ -359,8 +359,4 @@ void RRT::resetDisplayMatrixPathOnly(){
             }
         }
     }
-}
-
-int * RRT::getObstacles() {
-    return *obstacles;
 }

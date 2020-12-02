@@ -9,6 +9,8 @@
 
 
 class RandomGenerator {
+private:
+    int obstacles[5][5]{};
 public:
     void initialize();
     coordinate getRandomPosition(int size);

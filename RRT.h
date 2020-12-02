@@ -84,7 +84,6 @@ public:
     void inputObstacles(string csvOfObstacles);
     void display();
     void resetDisplayMatrix();
-    int * getObstacles();
 
 
 };
