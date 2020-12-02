@@ -9,11 +9,23 @@
 
 using namespace std;
 
+RRT::RRT(){
+    sideSize = 10;
+    maxDistance = 1;
+
+    for(int i = 0; i < sideSize; i++){
+        for(int j = 0; j < sideSize; j++){
+            visited[i][j] = 0;
+            obstacles[i][j] = 0;
+        }
+    }
+}
+
 //Main function for running RRT
 vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int endColumn) {
 
     srand(time(nullptr));
-
+    cout << sideSize << endl;
     //Inputs start and end coordinates
     node * startNode = new node(nullptr, nullptr);
     startNode->coordinate = new coordinate(startRow, startColumn);
@@ -31,12 +43,14 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     int numIterations = 0;
 
     //Loop until end node is found or you have gone though enough iterations that their isn't a path to the end
-    while(!endNodeFound && numIterations < size * size * 3){
+    while(!endNodeFound && numIterations < pow(sideSize, 5)){
         node * nextNode = getNextNode(endCoordinate);
 
         //Set the flag if this node is the end
         if(nextNode->coordinate != nullptr){
             if(nextNode->coordinate->row == endCoordinate->row && nextNode->coordinate->column == endCoordinate->column){
+                endNodeFound = true;
+            } else if (getManhattanDist(startNode->coordinate->column, startNode->coordinate->row, endCoordinate->column, endCoordinate->row) == 1){
                 endNodeFound = true;
             }
 
@@ -58,14 +72,23 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
                 } else if (columnDif < 0) {
                     displayMatrix[(rowDif + nextNode->parent->coordinate->row)*2+1][(columnDif + nextNode->parent->coordinate->column)*2+2] = 10;
                 }
-
+                display();
             }
         }
-        display();
         numIterations ++;
-    }
 
-    if(numIterations >= size * size * 3){
+      //  if(numIterations % 10 == 0){
+            if(!areStillOpenSpaces()){
+                break;
+            }
+      //  }
+
+
+
+    }
+    cout << "Num iterations " << numIterations << endl;
+
+    if(numIterations >= pow(sideSize, 5)){
         cout << "Too many iterations, goal is likely unreachable" << endl;
     }
 
@@ -75,10 +98,12 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 //gets the next node to add to the graph
 node * RRT::getNextNode(coordinate * endCoordinate) {
     coordinate goalCoordinate = getNextGoalCoordinate(endCoordinate);
+    cout << goalCoordinate.column << " " << goalCoordinate.row << endl;
     node * nearestNode = getNearestNode(goalCoordinate);
     node * newNode = new node (nullptr, nullptr);
 
-    if(nearestNode != nullptr){
+    if(nearestNode->coordinate != nullptr){
+        cout << nearestNode->coordinate->column << " " << nearestNode->coordinate->row << endl;
         coordinate * newCoordinate = coordinateForNewNodeManhattan(nearestNode, goalCoordinate);
         if(newCoordinate->row != -1 && coordinateIsOpen(newCoordinate->column, newCoordinate->row)){
             newNode->parent = nearestNode;
@@ -96,20 +121,26 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
     int row;
     int column;
 
-    if(goToGoal <= 5){
+    if(goToGoal <= 10){
         row = endCoordinate->row;
         column = endCoordinate->column;
     } else {
-        row = rand() % size;
-        column = rand() % size;
+        row = rand() % sideSize;
+        column = rand() % sideSize;
+    }
+    if(coordinateIsOpen(column, row)){
+        return coordinate(row, column);
+    } else {
+        coordinate coord = getNextGoalCoordinate(endCoordinate);
+        return coord;
     }
 
-    return coordinate(row, column);
+
 }
 
 // Gets the node closest to the goal coordinate
 node *RRT::getNearestNode(coordinate goalCoordinate) {
-    node * nearestNode = nullptr;
+    node * nearestNode = new node(nullptr, nullptr);
     double nearest = INT_MAX;
     for(node * current : graph){//Loop through the nodes in the graph
         int manhattanDistToGoal = getManhattanDist(current->coordinate->column, current->coordinate->row, goalCoordinate.column, goalCoordinate.row);
@@ -124,7 +155,7 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
         }
 
         //If our current node is closer than the previous ones replace the shortest with this node
-        if(!blocked && nearestNode == nullptr){
+        if(!blocked && nearestNode->coordinate == nullptr){
             nearestNode = current;
             nearest = manhattanDistToGoal;
         } else {
@@ -139,13 +170,13 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
 }
 
 // Finds the coordinate for the next node using the closest node and going one square closer to the goal
-coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coordinate) {
-    double manhattanDistance = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row), coordinate.column,  coordinate.row);
+coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate goalCoordinate) {
+    double manhattanDistance = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row), goalCoordinate.column, goalCoordinate.row);
 
     if (manhattanDistance <= maxDistance){ // Goal coordinate is only one unit away
-        return new struct coordinate(coordinate.row, coordinate.column);
+        return new coordinate(goalCoordinate.row, goalCoordinate.column);
     } else {
-        struct coordinate * bestCoordinate = new struct coordinate(-1,-1);
+        coordinate * bestCoordinate = new coordinate(-1,-1);
         int shortestManhattanDist = INT_MAX;
         //Gets the distances from the four squares on each side of the nearest node
         int topSquareDist = -1;
@@ -153,20 +184,24 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coor
         int bottomSquareDist = -1;
         int leftSquareDist = -1;
 
-        if(coordinateIsOpen(closetNode->coordinate->column, closetNode->coordinate->row + 1)){
-            topSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row + 1), coordinate.column,coordinate.row);
+        if (coordinateIsOpen(closetNode->coordinate->column, closetNode->coordinate->row + 1)) {
+            topSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row + 1),
+                                             goalCoordinate.column, goalCoordinate.row);
         }
-        if(coordinateIsOpen(closetNode->coordinate->column + 1, closetNode->coordinate->row)){
-            rightSquareDist = getManhattanDist((closetNode->coordinate->column+ 1), (closetNode->coordinate->row), coordinate.column,coordinate.row);
+        if (coordinateIsOpen(closetNode->coordinate->column + 1, closetNode->coordinate->row)) {
+            rightSquareDist = getManhattanDist((closetNode->coordinate->column + 1), (closetNode->coordinate->row),
+                                               goalCoordinate.column, goalCoordinate.row);
         }
-        if(coordinateIsOpen(closetNode->coordinate->column, closetNode->coordinate->row - 1)){
-            bottomSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row - 1), coordinate.column,coordinate.row);
+        if (coordinateIsOpen(closetNode->coordinate->column, closetNode->coordinate->row - 1)) {
+            bottomSquareDist = getManhattanDist((closetNode->coordinate->column), (closetNode->coordinate->row - 1),
+                                                goalCoordinate.column, goalCoordinate.row);
         }
-        if(coordinateIsOpen(closetNode->coordinate->column - 1, closetNode->coordinate->row)){
-            leftSquareDist = getManhattanDist((closetNode->coordinate->column - 1), (closetNode->coordinate->row), coordinate.column,coordinate.row);
+        if (coordinateIsOpen(closetNode->coordinate->column - 1, closetNode->coordinate->row)) {
+            leftSquareDist = getManhattanDist((closetNode->coordinate->column - 1), (closetNode->coordinate->row),
+                                              goalCoordinate.column, goalCoordinate.row);
         }
 
-        //Randomization so it doesn't preferentially go one direction every time if multiple square are the same distance away
+//Randomization so it doesn't preferentially go one direction every time if multiple square are the same distance away
         int whichFirst = rand() % 4;
         bool allHaveBeenChecked = false;
         bool hasLoopedOnce = false;
@@ -175,34 +210,34 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coor
         bool bottomChecked = false;
         bool leftChecked = false;
 
-        while(!allHaveBeenChecked){ // Loop though all four squares and find the one that is closest
-            if(!topChecked && (whichFirst == 0 || hasLoopedOnce)){
+        while (!allHaveBeenChecked) { // Loop though all four squares and find the one that is closest
+            if (!topChecked && (whichFirst == 0 || hasLoopedOnce)) {
                 topChecked = true;
-                if(topSquareDist != -1 && topSquareDist < shortestManhattanDist){
+                if (topSquareDist != -1 && topSquareDist < shortestManhattanDist) {
                     //Square above
                     shortestManhattanDist = topSquareDist;
                     bestCoordinate->column = closetNode->coordinate->column;
                     bestCoordinate->row = closetNode->coordinate->row + 1;
                 }
-            } else if (!rightChecked && (whichFirst == 1 || hasLoopedOnce)){
+            } else if (!rightChecked && (whichFirst == 1 || hasLoopedOnce)) {
                 rightChecked = true;
-                if(rightSquareDist != -1 && rightSquareDist < shortestManhattanDist){
+                if (rightSquareDist != -1 && rightSquareDist < shortestManhattanDist) {
                     //Square to the right
                     shortestManhattanDist = rightSquareDist;
                     bestCoordinate->column = closetNode->coordinate->column + maxDistance;
                     bestCoordinate->row = closetNode->coordinate->row;
                 }
-            } else if (!bottomChecked && (whichFirst == 2 || hasLoopedOnce)){
+            } else if (!bottomChecked && (whichFirst == 2 || hasLoopedOnce)) {
                 bottomChecked = true;
-                if(bottomSquareDist != -1 && bottomSquareDist < shortestManhattanDist){
+                if (bottomSquareDist != -1 && bottomSquareDist < shortestManhattanDist) {
                     //Square below
                     shortestManhattanDist = bottomSquareDist;
                     bestCoordinate->column = closetNode->coordinate->column;
                     bestCoordinate->row = closetNode->coordinate->row - maxDistance;
                 }
-            } else if (!leftChecked && (whichFirst == 3 || hasLoopedOnce)){
+            } else if (!leftChecked && (whichFirst == 3 || hasLoopedOnce)) {
                 leftChecked = true;
-                if(leftSquareDist != -1 && leftSquareDist < shortestManhattanDist){
+                if (leftSquareDist != -1 && leftSquareDist < shortestManhattanDist) {
                     //Square to the left
                     shortestManhattanDist = leftSquareDist;
                     bestCoordinate->column = closetNode->coordinate->column - maxDistance;
@@ -210,12 +245,10 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate coor
                 }
             }
             hasLoopedOnce = true;
-            if(topChecked && rightChecked && bottomChecked && leftChecked){
+            if (topChecked && rightChecked && bottomChecked && leftChecked) {
                 allHaveBeenChecked = true;
             }
         }
-
-
         return bestCoordinate;
     }
 }
@@ -228,7 +261,7 @@ int RRT::getManhattanDist(double column1, double row1, double column2, double ro
 
 // Checks if a coordinate hasn't been visited and doesn't have an obstacle
 bool RRT::coordinateIsOpen(int column, int row) {
-    if(column < size && column > -1 && row < size && row > -1){
+    if(column < sideSize && column > -1 && row < sideSize && row > -1){
         bool hasBeenVisited = visited[row][column] == 0;
         bool isOpen = obstacles[row][column] != 1;
         return hasBeenVisited && isOpen;
@@ -301,15 +334,16 @@ void RRT::inputObstacles(string csvOfObstacles){
         column = stoi(columnRaw);
 
         obstacles[row][column] = 1;
+        cout << "Adding " << column << ", " << row << endl;
         displayMatrix[row*2+1][column*2 +1] = 9;
     }
-
+    cout << endl;
 }
 
 //Prints the display matrix
 void RRT::display(){
-    for(int i = size*2; i >= 0; i --){
-        for(int j = 0; j < (size*2)+1; j ++){
+    for(int i = sideSize * 2; i >= 0; i --){
+        for(int j = 0; j < (sideSize * 2) + 1; j ++){
             int num = displayMatrix[i][j];
             if(num == 0){
                 cout << "   ";
@@ -342,8 +376,8 @@ void RRT::display(){
 
 //Clears everything except the grid from the matrix
 void RRT::resetDisplayMatrix(){
-    for(int i = 0; i < size*2+1; i ++){
-        for(int j = 0; j < size*2+1; j ++){
+    for(int i = 0; i < sideSize * 2 + 1; i ++){
+        for(int j = 0; j < sideSize * 2 + 1; j ++){
            displayMatrix[i][j] = emptyDisplayMatrix[i][j];
         }
     }
@@ -352,11 +386,43 @@ void RRT::resetDisplayMatrix(){
 
 //Clears paths out of the matrix but leave starting, ending and obstacles
 void RRT::resetDisplayMatrixPathOnly(){
-    for(int i = 0; i < size*2+1; i ++){
-        for(int j = 0; j < size*2+1; j ++){
+    for(int i = 0; i < sideSize * 2 + 1; i ++){
+        for(int j = 0; j < sideSize * 2 + 1; j ++){
             if(displayMatrix[i][j] != 9 && displayMatrix[i][j] != 6 && displayMatrix[i][j] != 7){
                 displayMatrix[i][j] = emptyDisplayMatrix[i][j];
             }
         }
     }
 }
+
+bool RRT::areStillOpenSpaces() {
+    for(int i = 0; i < sideSize; i++){
+        for(int j = 0; j < sideSize; j++){
+            if(visited[i][j] == 0 && obstacles[i][j] == 0){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+RRT::~RRT(){
+    for(node * del: graph){
+        delete del->coordinate;
+        delete del;
+    }
+}
+
+void RRT::updateObstacles() {
+    display();
+    for(int i = 0; i < sideSize; i++){
+        for(int j = 0; j < sideSize; j++){
+            if(obstacles[i][j] != 0){
+                displayMatrix[i*2+1][j*2+1] = 9;
+            }
+        }
+    }
+    cout << "updated" << endl;
+    display();
+}
+

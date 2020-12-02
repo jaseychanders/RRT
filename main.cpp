@@ -8,27 +8,20 @@
 
 using namespace std;
 
-using namespace std;
-
-//TODO fix starting and ending points being in obstacles
-
 int main(){
-    RRT rrt;
     RandomGenerator randomGenerator;
-    randomGenerator.initialize();
-    string obstacles = randomGenerator.getObstacles(5);
-    cout << obstacles << endl;
+    randomGenerator.initialize(10);
+    string stringOfObstacles = randomGenerator.getObstacles(10);
+    cout << stringOfObstacles << endl;
+    randCoordinate startingPosition = randomGenerator.getRandomPosition(10);
+    randCoordinate endingPosition = randomGenerator.getRandomPosition(10);
+    cout << startingPosition.row << " " << startingPosition.column << " " << endingPosition.row << " " << endingPosition.column << endl;
+
+
+    RRT rrt;
     rrt.resetDisplayMatrix();
-    rrt.inputObstacles(obstacles);
-    coordinate startingPosition = randomGenerator.getRandomPosition(5);
-    coordinate endingPosition = randomGenerator.getRandomPosition(5);
-
- //   cout << startingPosition.column << ", " << startingPosition.row << "  " << endingPosition.column << ", " << endingPosition.row << endl;
-   // cout << obstacles << endl;
-
-
-
-  // vector<coordinate> path = rrt.runRRT(9,9,9,0);
+    rrt.inputObstacles(stringOfObstacles);
+    rrt.updateObstacles();
     vector<coordinate> path = rrt.runRRT(startingPosition.row,startingPosition.column,endingPosition.row,endingPosition.column);
     cout << endl;
 }
