@@ -21,6 +21,5 @@ int main(){
     RRT rrt;
     rrt.resetDisplayMatrix();
     rrt.inputObstacles(stringOfObstacles);
-   // rrt.updateObstacles();
     vector<coordinate> path = rrt.runRRT(startingPosition.row,startingPosition.column,endingPosition.row,endingPosition.column);
 }
