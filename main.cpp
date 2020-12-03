@@ -9,17 +9,17 @@
 using namespace std;
 
 int main(){
+
     RandomGenerator randomGenerator;
-    randomGenerator.initialize(10);
-    string stringOfObstacles = randomGenerator.getObstacles(10);
+    randomGenerator.initialize(sideSize);
+    string stringOfObstacles = randomGenerator.getObstacles(sideSize);
     cout <<"Obstacles string: " << stringOfObstacles << endl;
-    randCoordinate startingPosition = randomGenerator.getRandomPosition(10);
-    randCoordinate endingPosition = randomGenerator.getRandomPosition(10);
+    coordinate startingPosition = randomGenerator.getRandomPosition(sideSize);
+    coordinate endingPosition = randomGenerator.getRandomPosition(sideSize);
     cout << "Starting x,y: " << startingPosition.x << "," << startingPosition.y << " \nEnding x,y " << endingPosition.x << "," << endingPosition.y << endl;
 
 
     RRT rrt;
-  //  rrt.resetDisplayMatrix();
     rrt.inputObstacles(stringOfObstacles);
     vector<coordinate> path = rrt.runRRT(startingPosition.x, startingPosition.y, endingPosition.x, endingPosition.y);
 }

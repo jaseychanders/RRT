@@ -16,7 +16,7 @@ void RandomGenerator::initialize(int size) {
     }
 }
 
-randCoordinate RandomGenerator::getRandomPosition(int size) {
+coordinate RandomGenerator::getRandomPosition(int size) {
 
     while(true){
         int x = rand() % (size-1);
@@ -24,7 +24,7 @@ randCoordinate RandomGenerator::getRandomPosition(int size) {
         if(x > -1 && x < size && y > -1 && y < size) {
             if (randomObstacles[y][x] == 0) {
                 randomObstacles[y][x] = 1;
-                return randCoordinate(x, y);
+                return coordinate(x, y);
             }
         }
     }

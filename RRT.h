@@ -1,6 +1,7 @@
 //
 // Created by Jasey Chanders on 11/27/20.
 //
+#pragma
 #ifndef RRT_RRT_H
 #define RRT_RRT_H
 
@@ -17,11 +18,7 @@ struct coordinate{
         this->y = y;
         this->x = x;
     }
-//    bool operator < (const coordinate& coordinate){
-//        int thisHypotenuse = sqrt((this->y * this->y) + (this->x * this->x));
-//        int coordinateHypotenuse = sqrt((coordinate.y * coordinate.y) + (coordinate.x * coordinate.x));
-//        return thisHypotenuse < coordinateHypotenuse;
-//    }
+
     bool operator == (const coordinate& coordinate){
         return this->y == coordinate.y && this->x == coordinate.x;
     }
@@ -37,26 +34,14 @@ struct node{
     }
 };
 
+const int maxDistance = 1;
+const int sideSize = 25;
 
 class RRT {
     private:
-        int maxDistance;
-        int sideSize;
-        int obstacles[10][10]{};
-        int visited[10][10]{};
-      //  int emptyDisplayMatrix[21][21] = {{2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}, {2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2},
-//                                          {2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2}};
 
-//        int displayMatrix[21][21]{};
+        int obstacles[sideSize][sideSize]{};
+        int visited[sideSize][sideSize]{};
         bool endNodeFound = false;
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
@@ -67,7 +52,6 @@ class RRT {
         coordinate getNextGoalCoordinate(coordinate * endCoordinate);
         vector<coordinate> printPath(node * endNode, int startX, int startY, int endX, int endY);
         node * getNode(coordinate coordinate);
-     //   void resetDisplayMatrixPathOnly();
         bool areStillOpenSpaces();
 
 
@@ -76,10 +60,7 @@ public:
     ~RRT();
     vector<coordinate> runRRT(int startX, int startY, int endX, int endY);
     void inputObstacles(string csvOfObstacles);
-  //  void display();
-    void displayWOMatrix(int startX, int startY, int endX, int endY);
-  //  void resetDisplayMatrix();
-   // void updateObstacles();
+    void display(int startX, int startY, int endX, int endY);
 
 
 };
