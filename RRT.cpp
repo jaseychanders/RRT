@@ -63,7 +63,7 @@ void RRT::runRRT(int startX, int startY, int endX, int endY) {
         numIterations ++;
 
     }
-    cout << "Num iterations " << numIterations << endl;
+    cout << "Number of iterations " << numIterations << endl;
 
     if(numIterations >= pow(sideSize, 5)){
         cout << "Too many iterations, goal is likely unreachable" << endl;

@@ -12,8 +12,10 @@
  * and then going a certain distance towards that goal and adding a new node to the graph
  */
 
-//In order to run this code simply compile it and everything should be taken care of
-//the process and the final path will be outputted to the terminal
+//In order to run this code simply compile using
+// g++ -std=c++11 main.cpp RandomGenerator.cpp RRT.cpp
+// and everything should be taken care of
+//The process and the final path will be outputted to the terminal
 //If you want to change the size of the field it can be change in the RRT.h file
 //If you want to specify starting and ending locations instead of using random ones uncomment the
 // specified line below
