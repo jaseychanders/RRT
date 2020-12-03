@@ -1,6 +1,8 @@
 # Project Summary
 RRT is an algorithm used in robotics applications for mapping areas and finding paths from a given start point to a given end point in an unknown area. The process consists of building a tree of connected locations in the unknown field by generating random goal locations, finding the closest node in the tree to that location and then going a certain distance towards that goal and adding a new node to the graph. My version of RRT uses what is called Manhattan distance to find the nearest node which is the distance between two points only using straight lines and 90 degree turns. The result of RRT is a map of the area and a path (not necessarily the shortest) from the starting location to the ending location. For a more detailed description of RRT scroll down to my project proposal.
 
+This video does a good job of explaining the algorithm (mine is a somewhat simplified version so there are some differences) https://www.coursera.org/lecture/robotics-motion-planning/3-3-introduction-to-rapidly-exploring-random-trees-snRhD
+
 # Examples
 ## Full Map 
 S represents the starting location, E represents  the ending location, ▢ represents an obstacle and * are nodes in the graph
