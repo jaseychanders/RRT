@@ -79,7 +79,7 @@ public:
     void inputObstacles(string csvOfObstacles);
     void display();
     void resetDisplayMatrix();
-    void updateObstacles();
+   // void updateObstacles();
 
 
 };

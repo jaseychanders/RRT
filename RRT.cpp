@@ -25,7 +25,7 @@ RRT::RRT(){
 vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int endColumn) {
 
     srand(time(nullptr));
-    cout << sideSize << endl;
+    cout << "Side size: " <<  sideSize << endl;
     //Inputs start and end coordinates
     node * startNode = new node(nullptr, nullptr);
     startNode->coordinate = new coordinate(startRow, startColumn);
@@ -45,6 +45,8 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
     //Loop until end node is found or you have gone though enough iterations that their isn't a path to the end
     while(!endNodeFound && numIterations < pow(sideSize, 5)){
         node * nextNode = getNextNode(endCoordinate);
+
+      //  updateObstacles();
 
         //Set the flag if this node is the end
         if(nextNode->coordinate != nullptr){
@@ -98,7 +100,7 @@ vector<coordinate> RRT::runRRT(int startRow, int startColumn, int endRow, int en
 //gets the next node to add to the graph
 node * RRT::getNextNode(coordinate * endCoordinate) {
     coordinate goalCoordinate = getNextGoalCoordinate(endCoordinate);
-    cout << goalCoordinate.column << " " << goalCoordinate.row << endl;
+    cout << "Current goal x,y: " << goalCoordinate.column << "," << goalCoordinate.row << endl;
     node * nearestNode = getNearestNode(goalCoordinate);
     node * newNode = new node (nullptr, nullptr);
 
@@ -334,7 +336,6 @@ void RRT::inputObstacles(string csvOfObstacles){
         column = stoi(columnRaw);
 
         obstacles[row][column] = 1;
-        cout << "Adding " << column << ", " << row << endl;
         displayMatrix[row*2+1][column*2 +1] = 9;
     }
     cout << endl;
@@ -412,17 +413,17 @@ RRT::~RRT(){
         delete del;
     }
 }
-
-void RRT::updateObstacles() {
-    display();
-    for(int i = 0; i < sideSize; i++){
-        for(int j = 0; j < sideSize; j++){
-            if(obstacles[i][j] != 0){
-                displayMatrix[i*2+1][j*2+1] = 9;
-            }
-        }
-    }
-    cout << "updated" << endl;
-    display();
-}
+//
+//void RRT::updateObstacles() {
+//    display();
+//    for(int i = 0; i < sideSize; i++){
+//        for(int j = 0; j < sideSize; j++){
+//            if(obstacles[i][j] != 0){
+//                displayMatrix[i*2+1][j*2+1] = 9;
+//            }
+//        }
+//    }
+//    cout << "updated" << endl;
+//    display();
+//}
 

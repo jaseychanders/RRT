@@ -21,9 +21,11 @@ randCoordinate RandomGenerator::getRandomPosition(int size) {
     while(true){
         int x = rand() % (size-1);
         int y = rand() % (size-1);
-        if(randomObstacles[y][x] == 0){
-            randomObstacles[y][x] = 1;
-            return randCoordinate(y, x);
+        if(x > -1 && x < size && y > -1 && y < size) {
+            if (randomObstacles[y][x] == 0) {
+                randomObstacles[y][x] = 1;
+                return randCoordinate(y, x);
+            }
         }
     }
 
@@ -31,46 +33,18 @@ randCoordinate RandomGenerator::getRandomPosition(int size) {
 
 string RandomGenerator::getObstacles(int size) {
     int numOfObjects = rand() % size;
-    cout << numOfObjects << endl;
+    cout << "Number of objects: " << numOfObjects << endl;
     string objectsString;
     for(int i = 0; i < numOfObjects; i++){
-      //  int radiusOfObject = round(rand() % (size / 3));
         int x = rand() % (size-1);
         int y = rand() % (size-1);
-      //  if(radiusOfObject == 0){
+        if(x > -1 && x < size && y > -1 && y < size){
             objectsString.append(to_string(x));
             objectsString.append(",");
             objectsString.append(to_string(y));
             objectsString.append(";");
             randomObstacles[y][x] = 1;
-           // cout << randGenObstacles[y][x] << endl;
-//        } else {
-//            for(int j = -radiusOfObject; j < radiusOfObject; j++){
-//                int xLoc = x+j;
-//                for(int k = -radiusOfObject; k < radiusOfObject; k++){
-//                    int yLoc = y+k;
-//                    if(xLoc >=0 && xLoc < size && yLoc >=0 && yLoc < size){
-//                        char xChar = char(xLoc);
-//                        char yChar = char(yLoc);
-//                        objectsString.append(to_string(xChar));
-//                        objectsString.append(",");
-//                        objectsString.append(to_string(yChar));
-//                        objectsString.append(";");
-//                        randomObstacles[y][x] = 1;
-//                      //  cout << randGenObstacles[y][x] << endl;
-//                    }
-//                }
-        //}
-
-      //  }
-
-    }
-
-    for(int i = size-1; i > -1; i--){
-        for(int j = 0; j < size; j++){
-           cout << randomObstacles[i][j] << " ";
         }
-        cout << endl;
     }
 
     return objectsString;

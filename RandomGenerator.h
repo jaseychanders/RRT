@@ -19,7 +19,6 @@ struct randCoordinate {
 
 class RandomGenerator {
 private:
-    int randGenObstacles[10][10];
     int randomObstacles[10][10];
 public:
     void initialize(int size);
