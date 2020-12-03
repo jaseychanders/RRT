@@ -6,10 +6,13 @@
 // Main driver file for running the RRT (Randomly Exploring Random Trees) algorithm
 /*
  * RRT is an algorithm used in robotics application for mapping areas and finding paths from a
- * given start point to a given end point.
- * The process consists of building a tree of connected location in a field by
- * generating random goal locations, finding the closest node in the tree to that location
- * and then going a certain distance towards that goal and adding a new node to the graph
+ * given start point to a given end point. The process consists of building a tree of connected
+ * locations in an unknown field by generating random goal locations, finding the closest node in
+ * the tree to that location and then going a certain distance towards that goal and adding a new
+ * node to the graph. My version of RRT uses what is called Manhattan distance to find the nearest
+ * node which is the distance between two points only using straight line and 90 degree turns. The
+ * result of RRT is a map of the area and a path (not necessarily the shortest) from the starting
+ * location to the ending location.
  */
 
 //In order to run this code simply compile using
