@@ -24,7 +24,7 @@ randCoordinate RandomGenerator::getRandomPosition(int size) {
         if(x > -1 && x < size && y > -1 && y < size) {
             if (randomObstacles[y][x] == 0) {
                 randomObstacles[y][x] = 1;
-                return randCoordinate(y, x);
+                return randCoordinate(x, y);
             }
         }
     }
@@ -32,7 +32,7 @@ randCoordinate RandomGenerator::getRandomPosition(int size) {
 }
 
 string RandomGenerator::getObstacles(int size) {
-    int numOfObjects = rand() % size;
+    int numOfObjects = rand() % size * 2;
     cout << "Number of objects: " << numOfObjects << endl;
     string objectsString;
     for(int i = 0; i < numOfObjects; i++){

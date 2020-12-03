@@ -15,11 +15,11 @@ int main(){
     cout <<"Obstacles string: " << stringOfObstacles << endl;
     randCoordinate startingPosition = randomGenerator.getRandomPosition(10);
     randCoordinate endingPosition = randomGenerator.getRandomPosition(10);
-    cout << "Starting x,y: " <<  startingPosition.row << "," << startingPosition.column << " \nEnding x,y " << endingPosition.row << "," << endingPosition.column << endl;
+    cout << "Starting x,y: " << startingPosition.x << "," << startingPosition.y << " \nEnding x,y " << endingPosition.x << "," << endingPosition.y << endl;
 
 
     RRT rrt;
     rrt.resetDisplayMatrix();
     rrt.inputObstacles(stringOfObstacles);
-    vector<coordinate> path = rrt.runRRT(startingPosition.row,startingPosition.column,endingPosition.row,endingPosition.column);
+    vector<coordinate> path = rrt.runRRT(startingPosition.x, startingPosition.y, endingPosition.x, endingPosition.y);
 }

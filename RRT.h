@@ -11,19 +11,19 @@
 using namespace std;
 
 struct coordinate{
-    int row;
-    int column;
-    coordinate(int row, int column){
-        this->row = row;
-        this->column = column;
+    int y;
+    int x;
+    coordinate(int x, int y){
+        this->y = y;
+        this->x = x;
     }
-    bool operator < (const coordinate& coordinate){
-        int thisHypotenuse = sqrt((this->row * this->row) + (this->column * this->column));
-        int coordinateHypotenuse = sqrt((coordinate.row * coordinate.row) + (coordinate.column * coordinate.column));
-        return thisHypotenuse < coordinateHypotenuse;
-    }
+//    bool operator < (const coordinate& coordinate){
+//        int thisHypotenuse = sqrt((this->y * this->y) + (this->x * this->x));
+//        int coordinateHypotenuse = sqrt((coordinate.y * coordinate.y) + (coordinate.x * coordinate.x));
+//        return thisHypotenuse < coordinateHypotenuse;
+//    }
     bool operator == (const coordinate& coordinate){
-        return this->row == coordinate.row && this->column == coordinate.column;
+        return this->y == coordinate.y && this->x == coordinate.x;
     }
 };
 
@@ -61,21 +61,20 @@ class RRT {
         vector<node*> graph;
         node * getNextNode(coordinate * coordinate);
         coordinate *coordinateForNewNodeManhattan(node * closetNode, coordinate goalCoordinate);
-        int getManhattanDist(double column1, double row1, double column2, double row2);
+        int getManhattanDist(double x1, double y1, double x2, double y2);
         node * getNearestNode(coordinate goalCoordinate);
-        bool coordinateIsOpen(int column, int row);
+        bool coordinateIsOpen(int x, int y);
         coordinate getNextGoalCoordinate(coordinate * endCoordinate);
         vector<coordinate> printPath(node * endNode);
         node * getNode(coordinate coordinate);
         void resetDisplayMatrixPathOnly();
         bool areStillOpenSpaces();
-        coordinate *coordinateForNewNodeUtil(node *closetNode, coordinate goalCoordinate, coordinate * bestCoordinate);
 
 
 public:
     RRT();
     ~RRT();
-    vector<coordinate> runRRT(int startRow, int startColumn, int endRow, int endColumn);
+    vector<coordinate> runRRT(int startX, int startY, int endX, int endY);
     void inputObstacles(string csvOfObstacles);
     void display();
     void resetDisplayMatrix();

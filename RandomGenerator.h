@@ -8,12 +8,12 @@
 using namespace std;
 
 struct randCoordinate {
-    int row;
-    int column;
+    int y;
+    int x;
 
-    randCoordinate(int row, int column) {
-        this->row = row;
-        this->column = column;
+    randCoordinate(int x, int y) {
+        this->y = y;
+        this->x = x;
     }
 };
 
