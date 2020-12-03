@@ -1,6 +1,9 @@
 //
 // Created by Jasey Chanders on 11/27/20.
+// CSCI 2275 Final Project
 //
+
+//This file runs the RRT (randomly exploring random trees) algorithm
 
 #include "RRT.h"
 #include <math.h>
@@ -9,6 +12,7 @@
 
 using namespace std;
 
+//Initializes the visited and obstacles arrays to zero
 RRT::RRT(){
 
     for(int i = 0; i < sideSize; i++){
@@ -20,18 +24,17 @@ RRT::RRT(){
 }
 
 //Main function for running RRT
-vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
+void RRT::runRRT(int startX, int startY, int endX, int endY) {
 
     srand(time(nullptr));
-    cout << "Side size: " <<  sideSize << endl;
     //Inputs start and end coordinates
     node * startNode = new node(nullptr, nullptr);
     startNode->coordinate = new coordinate(startX, startY);
 
     display(startX, startY, endX, endY);
 
-    //Add start node to graph
-    graph.push_back(startNode);
+    //Add start node to tree
+    tree.push_back(startNode);
     visited[startNode->coordinate->y][startNode->coordinate->x] = 1;
 
     coordinate * endCoordinate = new coordinate(endX, endY);
@@ -39,7 +42,7 @@ vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
     int numIterations = 0;
 
     //Loop until end node is found or you have gone though enough iterations that their isn't a path to the end
-    while(!endNodeFound && numIterations < pow(sideSize, 5)){
+    while(!endNodeFound && numIterations < pow(sideSize, 2)){
         node * nextNode = getNextNode(endCoordinate);
 
         //Set the flag if this node is the end
@@ -50,22 +53,14 @@ vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
                 endNodeFound = true;
             }
 
-            // If we have a new node add it to the graph and the display matrix
+            // If we have a new node add it to the tree and the display matrix
             if(nextNode->coordinate != nullptr){
-                graph.push_back(nextNode);
+                tree.push_back(nextNode);
                 visited[nextNode->coordinate->y][nextNode->coordinate->x] = 1;
                 display(startX, startY, endX, endY);
             }
         }
         numIterations ++;
-
-      //  if(numIterations % 10 == 0){
-            if(!areStillOpenSpaces()){
-                break;
-            }
-      //  }
-
-
 
     }
     cout << "Num iterations " << numIterations << endl;
@@ -74,19 +69,17 @@ vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
         cout << "Too many iterations, goal is likely unreachable" << endl;
     }
 
-    return printPath(getNode(*endCoordinate), startX, startY, endX, endY);
+    printPath(getNode(*endCoordinate), startX, startY, endX, endY);
 }
 
-//gets the next node to add to the graph
+//gets the next node to add to the tree
 node * RRT::getNextNode(coordinate * endCoordinate) {
     coordinate goalCoordinate = getNextGoalCoordinate(endCoordinate);
-    cout << goalCoordinate.x << "," << goalCoordinate.y << endl;
     node * nearestNode = getNearestNode(goalCoordinate);
     node * newNode = new node (nullptr, nullptr);
 
-    if(nearestNode->coordinate != nullptr){
-        cout << nearestNode->coordinate->x << " " << nearestNode->coordinate->y << endl;
-        coordinate * newCoordinate = coordinateForNewNodeManhattan(nearestNode, goalCoordinate);
+    if(nearestNode->coordinate != nullptr){ // If nearest node is a valid location then add it to the tree
+        coordinate * newCoordinate = coordinateForNewNode(nearestNode, goalCoordinate);
         if(newCoordinate->y != -1 && coordinateIsOpen(newCoordinate->x, newCoordinate->y)){
             newNode->parent = nearestNode;
             newNode->coordinate = newCoordinate;
@@ -103,14 +96,14 @@ coordinate RRT::getNextGoalCoordinate(coordinate * endCoordinate) {
     int y;
     int x;
 
-    if(goToGoal <= 1){
+    if(goToGoal <= 1){ // 1 percent of the time chose the end goal as the goal
         y = endCoordinate->y;
         x = endCoordinate->x;
     } else {
         y = rand() % sideSize;
         x = rand() % sideSize;
     }
-    if(coordinateIsOpen(x, y)){
+    if(coordinateIsOpen(x, y)){ // Recursively call this function until a valid coordinate is found
         return coordinate(x, y);
     } else {
         coordinate coord = getNextGoalCoordinate(endCoordinate);
@@ -125,7 +118,7 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
 
     node * nearestNode = new node(nullptr, nullptr);
     double nearest = INT_MAX;
-    for(node * current : graph){//Loop through the nodes in the graph
+    for(node * current : tree){//Loop through the nodes in the tree
         int manhattanDistToGoal = getManhattanDist(current->coordinate->x, current->coordinate->y, goalCoordinate.x, goalCoordinate.y);
         bool blocked = true;
         //If any of the squares adjacent to the current node are open
@@ -148,7 +141,8 @@ node *RRT::getNearestNode(coordinate goalCoordinate) {
 }
 
 // Finds the coordinate for the next node using the closest node and going one square closer to the goal
-coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate goalCoordinate) {
+coordinate *RRT::coordinateForNewNode(node *closetNode, coordinate goalCoordinate) {
+
     double manhattanDistance = getManhattanDist((closetNode->coordinate->x), (closetNode->coordinate->y), goalCoordinate.x, goalCoordinate.y);
 
     if (manhattanDistance <= maxDistance){ // Goal coordinate is only one unit away
@@ -231,7 +225,7 @@ coordinate *RRT::coordinateForNewNodeManhattan(node *closetNode, coordinate goal
     }
 }
 
-//Calculates the distance between two points only going in strait lines and truning 90 degrees
+//Calculates the distance between two points only going in strait lines and turning 90 degrees
 int RRT::getManhattanDist(double x1, double y1, double x2, double y2){
     return (abs(x2 - x1) + abs(y2 - y1));
 }
@@ -249,12 +243,11 @@ bool RRT::coordinateIsOpen(int x, int y) {
 
 }
 
-// Clears the display matrix and then puts only the path that has been found in the matrix and prints it
-vector<coordinate> RRT::printPath(node * endNode, int startX, int startY, int endX, int endY) {
-   // resetDisplayMatrixPathOnly();
-    vector<coordinate> path;
+// field and then prints only the path to the end
+void RRT::printPath(node * endNode, int startX, int startY, int endX, int endY) {
     node * tmp = endNode;
 
+    //clears all paths
     for(int i = 0; i < sideSize; i++){
         for(int j = 0; j < sideSize; j++){
             visited[i][j] = 0;
@@ -262,19 +255,17 @@ vector<coordinate> RRT::printPath(node * endNode, int startX, int startY, int en
     }
 
     while(tmp != nullptr){ //Loops back though the trail of parent pointers
-        path.push_back(*tmp->coordinate);
 
         visited[tmp->coordinate->y][tmp->coordinate->x] = 1;
         tmp = tmp->parent;
     }
-    reverse(path.begin(), path.end());
+
     display(startX, startY, endX, endY);
-    return path;
 }
 
-//Searches though nodes in the graph and returns the node with the same coordinates or null if none mathch
+//Searches though nodes in the tree and returns the node with the same coordinates or null if none mathch
 node *RRT::getNode(coordinate coordinate) {
-    for(node * current : graph){
+    for(node * current : tree){
         if (*current->coordinate == coordinate){
             return current;
         }
@@ -306,17 +297,7 @@ void RRT::inputObstacles(string csvOfObstacles){
     cout << endl;
 }
 
-bool RRT::areStillOpenSpaces() {
-    for(int i = 0; i < sideSize; i++){
-        for(int j = 0; j < sideSize; j++){
-            if(visited[i][j] == 0 && obstacles[i][j] == 0){
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
+//Displays the current field
 void RRT::display(int startX, int startY, int endX, int endY) {
     for(int i = 0; i < sideSize; i++){
         cout << "---";
@@ -345,8 +326,9 @@ void RRT::display(int startX, int startY, int endX, int endY) {
     cout << "---" << endl;
 }
 
+//Cleans up memory
 RRT::~RRT(){
-    for(node * del: graph){
+    for(node * del: tree){
         delete del->coordinate;
         delete del;
     }
