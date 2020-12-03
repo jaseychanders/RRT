@@ -19,7 +19,7 @@ int main(){
 
 
     RRT rrt;
-    rrt.resetDisplayMatrix();
+  //  rrt.resetDisplayMatrix();
     rrt.inputObstacles(stringOfObstacles);
     vector<coordinate> path = rrt.runRRT(startingPosition.x, startingPosition.y, endingPosition.x, endingPosition.y);
 }

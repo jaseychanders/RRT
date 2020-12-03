@@ -29,10 +29,11 @@ vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
     //Inputs start and end coordinates
     node * startNode = new node(nullptr, nullptr);
     startNode->coordinate = new coordinate(startX, startY);
-    displayMatrix[startY * 2 + 1][startX * 2 + 1] = 6;
-    displayMatrix[endY * 2 + 1][endX * 2 + 1] = 7;
+//    displayMatrix[startY * 2 + 1][startX * 2 + 1] = 6;
+  //  displayMatrix[endY * 2 + 1][endX * 2 + 1] = 7;
 
-    display();
+    displayWOMatrix(startX, startY, endX, endY);
+   // display();
 
     //Add start node to graph
     graph.push_back(startNode);
@@ -60,21 +61,21 @@ vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
             if(nextNode->coordinate != nullptr){
                 graph.push_back(nextNode);
                 visited[nextNode->coordinate->y][nextNode->coordinate->x] = 1;
-                if(displayMatrix[nextNode->coordinate->y * 2 + 1][nextNode->coordinate->x * 2 + 1] != 7 && displayMatrix[nextNode->coordinate->y * 2 + 1][nextNode->coordinate->x * 2 + 1] != 6){
-                    displayMatrix[nextNode->coordinate->y * 2 + 1][nextNode->coordinate->x * 2 + 1] = 3;
-                }
-                int xDif = nextNode->coordinate->y - nextNode->parent->coordinate->y;
-                int yDif = nextNode->coordinate->x - nextNode->parent->coordinate->x;
-                if(xDif > 0){
-                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2][(yDif + nextNode->parent->coordinate->x) * 2 + 1] = 5;
-                } else if(xDif < 0){
-                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2 + 2][(yDif + nextNode->parent->coordinate->x) * 2 + 1] = 8;
-                }  else if (yDif > 0) {
-                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2 + 1][(yDif + nextNode->parent->coordinate->x) * 2] = 4;
-                } else if (yDif < 0) {
-                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2 + 1][(yDif + nextNode->parent->coordinate->x) * 2 + 2] = 10;
-                }
-                display();
+//                if(displayMatrix[nextNode->coordinate->y * 2 + 1][nextNode->coordinate->x * 2 + 1] != 7 && displayMatrix[nextNode->coordinate->y * 2 + 1][nextNode->coordinate->x * 2 + 1] != 6){
+//                    displayMatrix[nextNode->coordinate->y * 2 + 1][nextNode->coordinate->x * 2 + 1] = 3;
+//                }
+//                int xDif = nextNode->coordinate->y - nextNode->parent->coordinate->y;
+//                int yDif = nextNode->coordinate->x - nextNode->parent->coordinate->x;
+//                if(xDif > 0){
+//                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2][(yDif + nextNode->parent->coordinate->x) * 2 + 1] = 5;
+//                } else if(xDif < 0){
+//                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2 + 2][(yDif + nextNode->parent->coordinate->x) * 2 + 1] = 8;
+//                }  else if (yDif > 0) {
+//                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2 + 1][(yDif + nextNode->parent->coordinate->x) * 2] = 4;
+//                } else if (yDif < 0) {
+//                    displayMatrix[(xDif + nextNode->parent->coordinate->y) * 2 + 1][(yDif + nextNode->parent->coordinate->x) * 2 + 2] = 10;
+//                }
+                displayWOMatrix(startX, startY, endX, endY);
             }
         }
         numIterations ++;
@@ -94,7 +95,7 @@ vector<coordinate> RRT::runRRT(int startX, int startY, int endX, int endY) {
         cout << "Too many iterations, goal is likely unreachable" << endl;
     }
 
-    return printPath(getNode(*endCoordinate));
+    return printPath(getNode(*endCoordinate), startX, startY, endX, endY);
 }
 
 //gets the next node to add to the graph
@@ -270,35 +271,44 @@ bool RRT::coordinateIsOpen(int x, int y) {
 }
 
 // Clears the display matrix and then puts only the path that has been found in the matrix and prints it
-vector<coordinate> RRT::printPath(node * endNode) {
-    resetDisplayMatrixPathOnly();
+vector<coordinate> RRT::printPath(node * endNode, int startX, int startY, int endX, int endY) {
+   // resetDisplayMatrixPathOnly();
     vector<coordinate> path;
     node * tmp = endNode;
+
+    for(int i = 0; i < sideSize; i++){
+        for(int j = 0; j < sideSize; j++){
+            visited[i][j] = 0;
+        }
+    }
+
     while(tmp != nullptr){ //Loops back though the trail of parent pointers
         path.push_back(*tmp->coordinate);
 
-        if(displayMatrix[tmp->coordinate->y * 2 + 1][tmp->coordinate->x * 2 + 1] != 7 && displayMatrix[tmp->coordinate->y * 2 + 1][tmp->coordinate->x * 2 + 1] != 6){
-            displayMatrix[tmp->coordinate->y * 2 + 1][tmp->coordinate->x * 2 + 1] = 3;
-        }
-        int yDif = 0;
-        int xDif = 0;
-        if(tmp->parent != nullptr){
-            yDif = tmp->coordinate->y - tmp->parent->coordinate->y;
-            xDif = tmp->coordinate->x - tmp->parent->coordinate->x;
-        }
-        if(yDif > 0){
-            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2][(xDif + tmp->parent->coordinate->x) * 2 + 1] = 5;
-        } else if(yDif < 0){
-            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2 + 2][(xDif + tmp->parent->coordinate->x) * 2 + 1] = 8;
-        }  else if (xDif > 0) {
-            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2 + 1][(xDif + tmp->parent->coordinate->x) * 2] = 4;
-        } else if (xDif < 0) {
-            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2 + 1][(xDif + tmp->parent->coordinate->x) * 2 + 2] = 10;
-        }
+        visited[tmp->coordinate->y][tmp->coordinate->x] = 1;
+
+//        if(displayMatrix[tmp->coordinate->y * 2 + 1][tmp->coordinate->x * 2 + 1] != 7 && displayMatrix[tmp->coordinate->y * 2 + 1][tmp->coordinate->x * 2 + 1] != 6){
+//            displayMatrix[tmp->coordinate->y * 2 + 1][tmp->coordinate->x * 2 + 1] = 3;
+//        }
+//        int yDif = 0;
+//        int xDif = 0;
+//        if(tmp->parent != nullptr){
+//            yDif = tmp->coordinate->y - tmp->parent->coordinate->y;
+//            xDif = tmp->coordinate->x - tmp->parent->coordinate->x;
+//        }
+//        if(yDif > 0){
+//            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2][(xDif + tmp->parent->coordinate->x) * 2 + 1] = 5;
+//        } else if(yDif < 0){
+//            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2 + 2][(xDif + tmp->parent->coordinate->x) * 2 + 1] = 8;
+//        }  else if (xDif > 0) {
+//            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2 + 1][(xDif + tmp->parent->coordinate->x) * 2] = 4;
+//        } else if (xDif < 0) {
+//            displayMatrix[(yDif + tmp->parent->coordinate->y) * 2 + 1][(xDif + tmp->parent->coordinate->x) * 2 + 2] = 10;
+//        }
         tmp = tmp->parent;
     }
     reverse(path.begin(), path.end());
-    display();
+    displayWOMatrix(startX, startY, endX, endY);
     return path;
 }
 
@@ -332,65 +342,65 @@ void RRT::inputObstacles(string csvOfObstacles){
         x = stoi(xRaw);
 
         obstacles[y][x] = 1;
-        displayMatrix[y*2+1][x*2 +1] = 9;
+      //  displayMatrix[y*2+1][x*2 +1] = 9;
     }
     cout << endl;
 }
 
 //Prints the display matrix
-void RRT::display(){
-    for(int i = sideSize * 2; i >= 0; i --){
-        for(int j = 0; j < (sideSize * 2) + 1; j ++){
-            int num = displayMatrix[i][j];
-            if(num == 0){
-                cout << "   ";
-            } else if(num == 1){
-                cout << "---";
-            } else if(num == 2){
-                cout << "|";
-            } else if(num == 3){
-                cout << " x ";
-            } else if(num == 4){
-                cout << "→";
-            }else if(num == 5){
-                cout << " ↑ ";
-            }else if(num == 6){
-                cout << " S ";
-            }else if(num == 7){
-                cout << " E ";
-            }else if(num == 8){
-                cout << " ↓ ";
-            }else if(num == 9){
-                cout << " # ";
-            }else if(num == 10){
-                cout << "←";
-            }
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
+//void RRT::display(){
+//    for(int i = sideSize * 2; i >= 0; i --){
+//        for(int j = 0; j < (sideSize * 2) + 1; j ++){
+//            int num = displayMatrix[i][j];
+//            if(num == 0){
+//                cout << "   ";
+//            } else if(num == 1){
+//                cout << "---";
+//            } else if(num == 2){
+//                cout << "|";
+//            } else if(num == 3){
+//                cout << " x ";
+//            } else if(num == 4){
+//                cout << "→";
+//            }else if(num == 5){
+//                cout << " ↑ ";
+//            }else if(num == 6){
+//                cout << " S ";
+//            }else if(num == 7){
+//                cout << " E ";
+//            }else if(num == 8){
+//                cout << " ↓ ";
+//            }else if(num == 9){
+//                cout << " # ";
+//            }else if(num == 10){
+//                cout << "←";
+//            }
+//        }
+//        cout << endl;
+//    }
+//    cout << endl;
+//}
 
 //Clears everything except the grid from the matrix
-void RRT::resetDisplayMatrix(){
-    for(int i = 0; i < sideSize * 2 + 1; i ++){
-        for(int j = 0; j < sideSize * 2 + 1; j ++){
-           displayMatrix[i][j] = emptyDisplayMatrix[i][j];
-        }
-    }
-}
-
-
-//Clears paths out of the matrix but leave starting, ending and obstacles
-void RRT::resetDisplayMatrixPathOnly(){
-    for(int i = 0; i < sideSize * 2 + 1; i ++){
-        for(int j = 0; j < sideSize * 2 + 1; j ++){
-            if(displayMatrix[i][j] != 9 && displayMatrix[i][j] != 6 && displayMatrix[i][j] != 7){
-                displayMatrix[i][j] = emptyDisplayMatrix[i][j];
-            }
-        }
-    }
-}
+//void RRT::resetDisplayMatrix(){
+//    for(int i = 0; i < sideSize * 2 + 1; i ++){
+//        for(int j = 0; j < sideSize * 2 + 1; j ++){
+//           displayMatrix[i][j] = emptyDisplayMatrix[i][j];
+//        }
+//    }
+//}
+//
+//
+////Clears paths out of the matrix but leave starting, ending and obstacles
+//void RRT::resetDisplayMatrixPathOnly(){
+//    for(int i = 0; i < sideSize * 2 + 1; i ++){
+//        for(int j = 0; j < sideSize * 2 + 1; j ++){
+//            if(displayMatrix[i][j] != 9 && displayMatrix[i][j] != 6 && displayMatrix[i][j] != 7){
+//                displayMatrix[i][j] = emptyDisplayMatrix[i][j];
+//            }
+//        }
+//    }
+//}
 
 bool RRT::areStillOpenSpaces() {
     for(int i = 0; i < sideSize; i++){
@@ -403,12 +413,36 @@ bool RRT::areStillOpenSpaces() {
     return false;
 }
 
+void RRT::displayWOMatrix(int startX, int startY, int endX, int endY) {
+    cout << "---------------------------------" << endl;
+    for(int i = sideSize -1; i > -1; i--){
+        cout << "|";
+        for(int j = 0; j < sideSize; j++){
+            if(j == startX && i == startY){
+                cout << " S ";
+            } else if (j == endX && i == endY){
+                cout << " E ";
+            } else if(visited[i][j] == 1){
+                cout << " * ";
+            } else if (obstacles[i][j] == 1){
+                cout << " █ ";
+            } else {
+                cout << "   ";
+            }
+        }
+        cout << "|" << endl;
+    }
+    cout << "---------------------------------" << endl;
+}
+
 RRT::~RRT(){
     for(node * del: graph){
         delete del->coordinate;
         delete del;
     }
 }
+
+
 //
 //void RRT::updateObstacles() {
 //    display();
