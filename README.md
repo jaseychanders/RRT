@@ -1,3 +1,36 @@
+# Project Summary
+RRT is an algorithm used in robotics application for mapping areas and finding paths from a given start point to a given end point. The process consists of building a tree of connected locations in an unknown field by generating random goal locations, finding the closest node in the tree to that location and then going a certain distance towards that goal and adding a new node to the graph. My version of RRT uses what is called Manhattan distance to find the nearest node which is the distance between two points only using straight line and 90 degree turns. The result of RRT is a map of the area and a path (not necessarily the shortest) from the starting location to the ending location.
+
+# Examples
+## Full Map
+
+## Final Path
+
+## How to Run
+If you are using VS code or a command line g++ complier use the following line to run the code, if you are using an IDE with built in compile functions simply run the code. 
+g++ -std=c++11 main.cpp RandomGenerator.cpp RRT.cpp
+
+## Dependencies/System Requirement
+There are no dependencies for this code and should be no system requirements
+
+## Team members
+None
+
+## Contributors
+Thank you so much to Sam Feig for suggesting this algorithm and for the help in planning out this project and debugging it.
+
+## Open Issues and Bugs
+None that I am aware of however due to the randomization there are many edge cases that are hard to find/test for. If you find any please let me know.
+
+## Changes from the initial proposal
+* Switched to Manhattan distances from Euclidean distances to simplify obstacle avoidance
+* Decided to use command line graphis instead of a graphics library due to complications of setting up graphics libraries
+* Limited max distance to 1 unit for simplicity
+* Did not implement RRT* or Dijkstra’s due to time constraints
+
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
 # Project Proposal
 
 ## Overview 
