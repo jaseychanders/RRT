@@ -29,6 +29,9 @@ void RRT::runRRT(int startX, int startY, int endX, int endY) {
     if(startX >= sideSize || startX < 0 || startY >= sideSize || startY < 0 || endX >= sideSize || endX < 0 || endY >= sideSize || endY < 0){
         cout << "Starting or ending location not within bounds" << endl;
         return;
+    } else if(startX == endX && startY == endY){
+        cout << "Starting and ending locations are the same" << endl;
+        return;
     }
 
     srand(time(nullptr));
