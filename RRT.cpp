@@ -26,6 +26,11 @@ RRT::RRT(){
 //Main function for running RRT
 void RRT::runRRT(int startX, int startY, int endX, int endY) {
 
+    if(startX >= sideSize || startX < 0 || startY >= sideSize || startY < 0 || endX >= sideSize || endX < 0 || endY >= sideSize || endY < 0){
+        cout << "Starting or ending location not within bounds" << endl;
+        return;
+    }
+
     srand(time(nullptr));
     //Inputs start and end coordinates
     node * startNode = new node(nullptr, nullptr);
