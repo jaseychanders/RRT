@@ -6,9 +6,11 @@ This video does a good job of explaining the algorithm (mine is a somewhat simpl
 # Examples
 ## Full Map 
 S represents the starting location, E represents  the ending location, ▢ represents an obstacle and * are nodes in the graph
+
 <img src="https://github.com/jaseychanders/RRT/blob/main/RRT%20Full%20Map.png" width="600">
 
 ## Final Path
+
 <img src="https://github.com/jaseychanders/RRT/blob/main/RRT%20Path.png" width="600">
 
 ## How to Run
